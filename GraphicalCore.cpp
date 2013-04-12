@@ -55,10 +55,16 @@ void GraphicalCore::buildCentralWidget()
 	l_main = new QVBoxLayout;
 	
 	sessions = new QTabWidget;
-	sessions->addTab(new ContextTab("0"), "0");
+	addContext();
 	l_main->addWidget(sessions);
 
 	centralWidget->setLayout(l_main);
 	setCentralWidget(centralWidget);
+}
+
+void GraphicalCore::addContext()
+{
+	QString name = QString::number(sessions->count()+1);
+	sessions->addTab(new ContextTab(name), name);
 }
 

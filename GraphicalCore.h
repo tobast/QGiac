@@ -46,12 +46,16 @@
 
 class GraphicalCore : public QMainWindow
 {
+	Q_OBJECT
 	public:
 		GraphicalCore(QWidget* parent=0);
 
 	private: //meth
 		void buildWidget();
 		void buildCentralWidget();
+
+	private slots:
+		void addContext();
 
 	private:
 		QWidget* centralWidget;
