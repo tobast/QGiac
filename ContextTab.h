@@ -43,6 +43,8 @@
 #include <QVBoxLayout>
 #include <QList>
 
+#include <giac/giac.h>
+
 class ContextTab : public QScrollArea
 {
 	public:
@@ -55,6 +57,7 @@ class ContextTab : public QScrollArea
 		QString contextName;
 		QVBoxLayout* l_main;
 		
+		giac::context context;
 };
 
 #endif//DEF_CONTEXTTAB

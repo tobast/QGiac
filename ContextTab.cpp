@@ -37,7 +37,7 @@
 
 #include "ContextTab.h"
 
-ContextTab::ContextTab(QString name) : contextName(name)
+ContextTab::ContextTab(QString name) : contextName(name), context(name.toStdString())
 {
 	buildWidget();
 }
