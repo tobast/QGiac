@@ -41,6 +41,7 @@
 #include <QMainWindow>
 #include <QTabWidget>
 #include <QVBoxLayout>
+#include <QPushButton>
 
 #include "ContextTab.h"
 
@@ -56,11 +57,14 @@ class GraphicalCore : public QMainWindow
 
 	private slots:
 		void addContext();
+		void delContext();
 
 	private:
 		QWidget* centralWidget;
 		QVBoxLayout* l_main;
 		QTabWidget* sessions;
+		QPushButton* btnAddTab;
+		QPushButton* btnDelTab;
 };
 
 #endif//DEF_GRAPHICALCORE

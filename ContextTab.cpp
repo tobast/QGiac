@@ -51,11 +51,10 @@ void ContextTab::computedExpr(const int& id)
 void ContextTab::buildWidget()
 {
 	l_main = new QVBoxLayout;
-
-	addCalcWidget();
-
 	setLayout(l_main);
 	l_main->setAlignment(Qt::AlignTop);
+
+	addCalcWidget();
 }
 
 void ContextTab::addCalcWidget(bool setFocus)

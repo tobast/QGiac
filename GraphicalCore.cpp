@@ -58,13 +58,27 @@ void GraphicalCore::buildCentralWidget()
 	addContext();
 	l_main->addWidget(sessions);
 
+	btnAddTab = new QPushButton("+");
+	sessions->setCornerWidget(btnAddTab);
+
+	btnDelTab = new QPushButton("-");
+	sessions->setCornerWidget(btnDelTab, Qt::TopLeftCorner);
+
 	centralWidget->setLayout(l_main);
 	setCentralWidget(centralWidget);
+	
+	connect(btnAddTab, SIGNAL(clicked()), this, SLOT(addContext()));
+	connect(btnDelTab, SIGNAL(clicked()), this, SLOT(delContext()));
 }
 
 void GraphicalCore::addContext()
 {
 	QString name = QString::number(sessions->count()+1);
 	sessions->addTab(new ContextTab(name), name);
+}
+
+void GraphicalCore::delContext()
+{
+	//TODO
 }
 
