@@ -49,12 +49,16 @@
 
 class ContextTab : public QScrollArea
 {
+	Q_OBJECT
 	public:
 		ContextTab(QString name);
 
+	public slots:
+		void computedExpr(const int& id);
+
 	private://meth
 		void buildWidget();
-		void addCalcWidget();
+		void addCalcWidget(bool setFocus=true);
 
 	private:
 		QString contextName;

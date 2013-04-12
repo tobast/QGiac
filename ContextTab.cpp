@@ -42,6 +42,12 @@ ContextTab::ContextTab(QString name) : contextName(name), context(name.toStdStri
 	buildWidget();
 }
 
+void ContextTab::computedExpr(const int& id)
+{
+	if(id == calcWidgets.size())
+		addCalcWidget();
+}
+
 void ContextTab::buildWidget()
 {
 	l_main = new QVBoxLayout;
@@ -52,10 +58,15 @@ void ContextTab::buildWidget()
 	l_main->setAlignment(Qt::AlignTop);
 }
 
-void ContextTab::addCalcWidget()
+void ContextTab::addCalcWidget(bool setFocus)
 {
 	CalculationWidget* calcWid = new CalculationWidget(&context, calcWidgets.size()+1);
 	l_main->addWidget(calcWid);
 	calcWidgets.append(calcWid);
+
+	connect(calcWid, SIGNAL(computedExpr(const int&)), this, SLOT(computedExpr(const int&)));
+
+	if(setFocus)
+		calcWid->setFocus(Qt::OtherFocusReason);
 }
 

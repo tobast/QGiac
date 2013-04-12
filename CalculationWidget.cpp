@@ -42,6 +42,11 @@ CalculationWidget::CalculationWidget(giac::context* context, const int& id) : co
 	buildWidget();
 }
 
+void CalculationWidget::setFocus(Qt::FocusReason reason)
+{
+	inputLine->setFocus(reason);
+}
+
 void CalculationWidget::buildWidget()
 {
 	setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
@@ -78,5 +83,6 @@ void CalculationWidget::compute() // slot
 	} catch(const std::runtime_error& e) {
 		outputLine->setText(e.what());
 	}
+	emit(computedExpr(id));
 }
 

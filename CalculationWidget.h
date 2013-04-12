@@ -54,11 +54,17 @@ class CalculationWidget : public QFrame
 	public:
 		CalculationWidget(giac::context* context, const int& id=-1);
 
+	public slots:
+		void setFocus(Qt::FocusReason reason);
+
 	private: //meth
 		void buildWidget();
 
 	private slots:
 		void compute();
+
+	signals:
+		void computedExpr(const int& id);
 	
 	private:
 		QVBoxLayout* l_main;
