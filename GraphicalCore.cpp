@@ -44,6 +44,8 @@ GraphicalCore::GraphicalCore(QWidget* parent) : QMainWindow(parent)
 
 void GraphicalCore::buildWidget()
 {
+	setWindowTitle("QGiac");
+	resize(800,600);
 	buildCentralWidget();
 }
 

@@ -35,34 +35,40 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/gpl.txt>.
  */
 
-#ifndef DEF_CONTEXTTAB
-#define DEF_CONTEXTTAB
+#ifndef DEF_CALCULATIONWIDGET
+#define DEF_CALCULATIONWIDGET
 
-#include <QScrollArea>
-#include <QString>
+#include <QFrame>
+#include <QLineEdit>
+#include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QList>
+#include <QLabel>
 
 #include <giac/giac.h>
 
-#include "CalculationWidget.h"
-
-class ContextTab : public QScrollArea
+class CalculationWidget : public QFrame
 {
+	Q_OBJECT
 	public:
-		ContextTab(QString name);
+		CalculationWidget(giac::context* context, const int& id=-1);
 
-	private://meth
+	private: //meth
 		void buildWidget();
-		void addCalcWidget();
 
+	private slots:
+		void compute();
+	
 	private:
-		QString contextName;
 		QVBoxLayout* l_main;
-		QList<CalculationWidget*> calcWidgets;
-		
-		giac::context context;
+		QHBoxLayout* l_upperLine;
+
+		QLabel* idLabel;
+		QLineEdit* inputLine;
+		QLineEdit* outputLine; // TODO replace with LaTeX output.
+
+		giac::context* context;
+		int id;
 };
 
-#endif//DEF_CONTEXTTAB
+#endif//DEF_CALCULATIONWIDGET
 

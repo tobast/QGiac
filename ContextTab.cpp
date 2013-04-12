@@ -46,6 +46,16 @@ void ContextTab::buildWidget()
 {
 	l_main = new QVBoxLayout;
 
+	addCalcWidget();
+
 	setLayout(l_main);
+	l_main->setAlignment(Qt::AlignTop);
+}
+
+void ContextTab::addCalcWidget()
+{
+	CalculationWidget* calcWid = new CalculationWidget(&context, calcWidgets.size()+1);
+	l_main->addWidget(calcWid);
+	calcWidgets.append(calcWid);
 }
 

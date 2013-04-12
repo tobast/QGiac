@@ -9,5 +9,11 @@ INCLUDEPATH += .
 LIBS += -lgiac -lgmp
 
 # Input
-HEADERS += ContextTab.h GraphicalCore.h headcomment.h
-SOURCES += ContextTab.cpp GraphicalCore.cpp main.cpp
+HEADERS += 	ContextTab.h \
+			GraphicalCore.h \
+			CalculationWidget.h
+
+SOURCES += 	ContextTab.cpp \
+			GraphicalCore.cpp \
+			CalculationWidget.cpp \
+			main.cpp

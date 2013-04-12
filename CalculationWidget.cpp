@@ -35,34 +35,42 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/gpl.txt>.
  */
 
-#ifndef DEF_CONTEXTTAB
-#define DEF_CONTEXTTAB
-
-#include <QScrollArea>
-#include <QString>
-#include <QVBoxLayout>
-#include <QList>
-
-#include <giac/giac.h>
-
 #include "CalculationWidget.h"
 
-class ContextTab : public QScrollArea
+CalculationWidget::CalculationWidget(giac::context* context, const int& id) : context(context), id(id)
 {
-	public:
-		ContextTab(QString name);
+	buildWidget();
+}
 
-	private://meth
-		void buildWidget();
-		void addCalcWidget();
+void CalculationWidget::buildWidget()
+{
+	setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
+	setLineWidth(2);
+	setMidLineWidth(3);
 
-	private:
-		QString contextName;
-		QVBoxLayout* l_main;
-		QList<CalculationWidget*> calcWidgets;
-		
-		giac::context context;
-};
+	l_main = new QVBoxLayout;
+	l_upperLine = new QHBoxLayout;
 
-#endif//DEF_CONTEXTTAB
+	idLabel = new QLabel(QString::number(id));
+	l_upperLine->addWidget(idLabel);
+	inputLine = new QLineEdit;
+	l_upperLine->addWidget(inputLine);
+	l_main->addLayout(l_upperLine);
+
+	outputLine = new QLineEdit;
+	outputLine->setReadOnly(true);
+	outputLine->setFrame(false);
+	l_main->addWidget(outputLine);
+
+	setLayout(l_main);
+
+	l_main->setAlignment(Qt::AlignTop);
+}
+
+void CalculationWidget::compute() // slot
+{
+	giac::gen input(inputLine->text().toStdString(), context);
+	QString out(input.eval(1, context).print().c_str());
+	outputLine->setText(out);
+}
 
