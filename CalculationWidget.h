@@ -46,6 +46,8 @@
 
 #include <giac/giac.h>
 
+#include <stdexcept>
+
 class CalculationWidget : public QFrame
 {
 	Q_OBJECT

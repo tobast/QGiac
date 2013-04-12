@@ -65,12 +65,18 @@ void CalculationWidget::buildWidget()
 	setLayout(l_main);
 
 	l_main->setAlignment(Qt::AlignTop);
+
+	connect(inputLine, SIGNAL(returnPressed()), this, SLOT(compute()));
 }
 
 void CalculationWidget::compute() // slot
 {
-	giac::gen input(inputLine->text().toStdString(), context);
-	QString out(input.eval(1, context).print().c_str());
-	outputLine->setText(out);
+	try {
+		giac::gen input(inputLine->text().toStdString(), context);
+		QString out(input.eval(1, context).print().c_str());
+		outputLine->setText(out);
+	} catch(const std::runtime_error& e) {
+		outputLine->setText(e.what());
+	}
 }
 
