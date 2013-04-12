@@ -35,28 +35,17 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/gpl.txt>.
  */
 
-#include "GraphicalCore.h"
+#include "ContextTab.h"
 
-GraphicalCore::GraphicalCore(QWidget* parent) : QMainWindow(parent)
+ContextTab::ContextTab(QString name) : contextName(name)
 {
 	buildWidget();
 }
 
-void GraphicalCore::buildWidget()
+void ContextTab::buildWidget()
 {
-	buildCentralWidget();
-}
-
-void GraphicalCore::buildCentralWidget()
-{
-	centralWidget = new QWidget;
 	l_main = new QVBoxLayout;
-	
-	sessions = new QTabWidget;
-	sessions->addTab(new ContextTab("0"), "0");
-	l_main->addWidget(sessions);
 
-	centralWidget->setLayout(l_main);
-	setCentralWidget(centralWidget);
+	setLayout(l_main);
 }
 

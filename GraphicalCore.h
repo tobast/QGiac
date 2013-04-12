@@ -42,6 +42,8 @@
 #include <QTabWidget>
 #include <QVBoxLayout>
 
+#include "ContextTab.h"
+
 class GraphicalCore : public QMainWindow
 {
 	public:

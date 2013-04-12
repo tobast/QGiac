@@ -35,28 +35,27 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/gpl.txt>.
  */
 
-#include "GraphicalCore.h"
+#ifndef DEF_CONTEXTTAB
+#define DEF_CONTEXTTAB
 
-GraphicalCore::GraphicalCore(QWidget* parent) : QMainWindow(parent)
+#include <QScrollArea>
+#include <QString>
+#include <QVBoxLayout>
+#include <QList>
+
+class ContextTab : public QScrollArea
 {
-	buildWidget();
-}
+	public:
+		ContextTab(QString name);
 
-void GraphicalCore::buildWidget()
-{
-	buildCentralWidget();
-}
+	private://meth
+		void buildWidget();
 
-void GraphicalCore::buildCentralWidget()
-{
-	centralWidget = new QWidget;
-	l_main = new QVBoxLayout;
-	
-	sessions = new QTabWidget;
-	sessions->addTab(new ContextTab("0"), "0");
-	l_main->addWidget(sessions);
+	private:
+		QString contextName;
+		QVBoxLayout* l_main;
+		
+};
 
-	centralWidget->setLayout(l_main);
-	setCentralWidget(centralWidget);
-}
+#endif//DEF_CONTEXTTAB
 
