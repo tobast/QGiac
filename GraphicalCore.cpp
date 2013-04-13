@@ -75,6 +75,7 @@ void GraphicalCore::addContext()
 	nextSessionId++;
 	ContextTab* tab = new ContextTab(name);
 	sessions->addTab(tab, name);
+	sessions->setCurrentIndex(sessions->count()-1);
 	tab->getCalcWidgets().back()->setFocus(Qt::OtherFocusReason);
 }
 
