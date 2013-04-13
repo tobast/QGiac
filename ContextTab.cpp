@@ -42,6 +42,11 @@ ContextTab::ContextTab(QString name) : contextName(name), context(name.toStdStri
 	buildWidget();
 }
 
+void ContextTab::endSession() // Called on session close
+{
+	// Maybe some day we'll need this.
+}
+
 void ContextTab::computedExpr(const int& id)
 {
 	if(id == calcWidgets.size())

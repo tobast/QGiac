@@ -54,6 +54,7 @@ class ContextTab : public QScrollArea
 	public:
 		ContextTab(QString name);
 		const QList<CalculationWidget*> getCalcWidgets() const { return calcWidgets; }
+		void endSession();
 
 	public slots:
 		void computedExpr(const int& id);

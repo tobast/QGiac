@@ -37,7 +37,7 @@
 
 #include "GraphicalCore.h"
 
-GraphicalCore::GraphicalCore(QWidget* parent) : QMainWindow(parent)
+GraphicalCore::GraphicalCore(QWidget* parent) : QMainWindow(parent), nextSessionId(1)
 {
 	buildWidget();
 	addContext();
@@ -57,30 +57,41 @@ void GraphicalCore::buildCentralWidget()
 	
 	sessions = new QTabWidget;
 	l_main->addWidget(sessions);
+	sessions->setTabsClosable(true);
 
 	btnAddTab = new QPushButton("+");
 	sessions->setCornerWidget(btnAddTab);
-
-	btnDelTab = new QPushButton("-");
-	sessions->setCornerWidget(btnDelTab, Qt::TopLeftCorner);
 
 	centralWidget->setLayout(l_main);
 	setCentralWidget(centralWidget);
 	
 	connect(btnAddTab, SIGNAL(clicked()), this, SLOT(addContext()));
-	connect(btnDelTab, SIGNAL(clicked()), this, SLOT(delContext()));
+	connect(sessions, SIGNAL(tabCloseRequested(int)), this, SLOT(delContext(const int&)));
 }
 
 void GraphicalCore::addContext()
 {
-	QString name = QString::number(sessions->count()+1);
+	QString name = QString::number(nextSessionId);
+	nextSessionId++;
 	ContextTab* tab = new ContextTab(name);
 	sessions->addTab(tab, name);
 	tab->getCalcWidgets().back()->setFocus(Qt::OtherFocusReason);
 }
 
-void GraphicalCore::delContext()
+void GraphicalCore::delContext(const int& tabId)
 {
-	//TODO
+	QMessageBox::StandardButton btn = QMessageBox::question(this, tr("Close context?"), tr("Are you sure you want to close this context? All the calculation done will be lost."), QMessageBox::Yes | QMessageBox::No);
+	if(btn != QMessageBox::Yes)
+		return;
+	
+	ContextTab* context = dynamic_cast<ContextTab*>(sessions->widget(tabId));
+	if(context == 0)
+		return; // cannot find the context
+
+	context->endSession();
+	sessions->removeTab(tabId);
+	
+	if(sessions->count() == 0)
+		addContext();
 }
 
