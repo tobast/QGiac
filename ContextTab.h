@@ -42,6 +42,7 @@
 #include <QString>
 #include <QVBoxLayout>
 #include <QList>
+#include <QApplication>
 
 #include <giac/giac.h>
 
@@ -52,6 +53,7 @@ class ContextTab : public QScrollArea
 	Q_OBJECT
 	public:
 		ContextTab(QString name);
+		const QList<CalculationWidget*> getCalcWidgets() const { return calcWidgets; }
 
 	public slots:
 		void computedExpr(const int& id);

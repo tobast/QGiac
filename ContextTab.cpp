@@ -55,9 +55,10 @@ void ContextTab::buildWidget()
 	containerWidget->setLayout(l_main);
 	l_main->setAlignment(Qt::AlignTop);
 
-	addCalcWidget();
 	setWidget(containerWidget);
 	setWidgetResizable(true);
+
+	addCalcWidget();
 }
 
 void ContextTab::addCalcWidget(bool setFocus)
@@ -65,14 +66,10 @@ void ContextTab::addCalcWidget(bool setFocus)
 	CalculationWidget* calcWid = new CalculationWidget(&context, calcWidgets.size()+1);
 	l_main->addWidget(calcWid);
 	calcWidgets.append(calcWid);
-	calcWid->setParent(containerWidget);
 
 	connect(calcWid, SIGNAL(computedExpr(const int&)), this, SLOT(computedExpr(const int&)));
 
 	if(setFocus)
-	{
 		calcWid->setFocus(Qt::OtherFocusReason);
-		ensureWidgetVisible(calcWid);
-	}
 }
 

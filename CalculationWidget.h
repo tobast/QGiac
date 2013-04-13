@@ -43,6 +43,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QFocusEvent>
 
 #include <giac/giac.h>
 
@@ -54,9 +55,9 @@ class CalculationWidget : public QFrame
 	public:
 		CalculationWidget(giac::context* context, const int& id=-1);
 
-	public slots:
-		void setFocus(Qt::FocusReason reason);
-
+	protected: //meth
+		void focusInEvent(QFocusEvent* event);
+	
 	private: //meth
 		void buildWidget();
 
@@ -65,7 +66,7 @@ class CalculationWidget : public QFrame
 
 	signals:
 		void computedExpr(const int& id);
-	
+
 	private:
 		QVBoxLayout* l_main;
 		QHBoxLayout* l_upperLine;

@@ -40,11 +40,13 @@
 CalculationWidget::CalculationWidget(giac::context* context, const int& id) : context(context), id(id)
 {
 	buildWidget();
+	setFocusPolicy(Qt::StrongFocus);
 }
 
-void CalculationWidget::setFocus(Qt::FocusReason reason)
+void CalculationWidget::focusInEvent(QFocusEvent* event)
 {
-	inputLine->setFocus(reason);
+	QFrame::focusInEvent(event);
+	inputLine->setFocus(event->reason());
 }
 
 void CalculationWidget::buildWidget()

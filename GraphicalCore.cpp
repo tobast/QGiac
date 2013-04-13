@@ -40,6 +40,7 @@
 GraphicalCore::GraphicalCore(QWidget* parent) : QMainWindow(parent)
 {
 	buildWidget();
+	addContext();
 }
 
 void GraphicalCore::buildWidget()
@@ -55,7 +56,6 @@ void GraphicalCore::buildCentralWidget()
 	l_main = new QVBoxLayout;
 	
 	sessions = new QTabWidget;
-	addContext();
 	l_main->addWidget(sessions);
 
 	btnAddTab = new QPushButton("+");
@@ -74,7 +74,9 @@ void GraphicalCore::buildCentralWidget()
 void GraphicalCore::addContext()
 {
 	QString name = QString::number(sessions->count()+1);
-	sessions->addTab(new ContextTab(name), name);
+	ContextTab* tab = new ContextTab(name);
+	sessions->addTab(tab, name);
+	tab->getCalcWidgets().back()->setFocus(Qt::OtherFocusReason);
 }
 
 void GraphicalCore::delContext()
