@@ -73,7 +73,7 @@ class CalculationWidget : public QFrame
 
 		QLabel* idLabel;
 		QLineEdit* inputLine;
-		QLineEdit* outputLine; // TODO replace with LaTeX output.
+		QLabel* outputLine; // TODO replace with LaTeX output.
 
 		giac::context* context;
 		int id;

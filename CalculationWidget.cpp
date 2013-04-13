@@ -64,9 +64,9 @@ void CalculationWidget::buildWidget()
 	l_upperLine->addWidget(inputLine);
 	l_main->addLayout(l_upperLine);
 
-	outputLine = new QLineEdit;
-	outputLine->setReadOnly(true);
-	outputLine->setFrame(false);
+	outputLine = new QLabel;
+//	outputLine->setReadOnly(true);
+//	outputLine->setFrame(false);
 	l_main->addWidget(outputLine);
 
 	setLayout(l_main);
