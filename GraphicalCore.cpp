@@ -59,7 +59,7 @@ void GraphicalCore::buildCentralWidget()
 	l_main->addWidget(sessions);
 	sessions->setTabsClosable(true);
 
-	btnAddTab = new QPushButton("+");
+	btnAddTab = new QPushButton("+"); //FIXME add a real icon
 	sessions->setCornerWidget(btnAddTab);
 
 	centralWidget->setLayout(l_main);

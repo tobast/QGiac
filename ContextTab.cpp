@@ -74,7 +74,13 @@ void ContextTab::addCalcWidget(bool setFocus)
 
 	connect(calcWid, SIGNAL(computedExpr(const int&)), this, SLOT(computedExpr(const int&)));
 
+	widget()->resize(widget()->sizeHint());
+
 	if(setFocus)
+	{
+		qApp->processEvents();
 		calcWid->setFocus(Qt::OtherFocusReason);
+		ensureVisible(0,containerWidget->height(),0,0);
+	}
 }
 
