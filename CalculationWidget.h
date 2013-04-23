@@ -49,6 +49,8 @@
 
 #include <stdexcept>
 
+#include "MathDisplay.h"
+
 class CalculationWidget : public QFrame
 {
 	Q_OBJECT
@@ -73,7 +75,8 @@ class CalculationWidget : public QFrame
 
 		QLabel* idLabel;
 		QLineEdit* inputLine;
-		QLabel* outputLine; // TODO replace with LaTeX output.
+//		QLabel* outputLine; // TODO replace with LaTeX output.
+		MathDisplay* outputDisp;
 
 		giac::context* context;
 		int id;
