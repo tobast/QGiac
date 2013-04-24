@@ -3,7 +3,7 @@
 ######################################################################
 
 DEFINES += KLF_SRC_BUILD
-QT += xml
+QT += gui xml
 # QMAKEFEATURES += "/usr/share/qt4/mkspecs/features"
 # CONFIG += qwt qwtmathml
 TEMPLATE = app
@@ -20,10 +20,12 @@ LIBS += -lgiac -lgmp -lklfbackend -lklftools
 HEADERS += 	ContextTab.h \
 			GraphicalCore.h \
 			CalculationWidget.h \
-			MathDisplay.h
+			MathDisplay.h \
+			TexRenderThread.h
 
 SOURCES += 	ContextTab.cpp \
 			GraphicalCore.cpp \
 			CalculationWidget.cpp \
 			MathDisplay.cpp \
+			TexRenderThread.cpp \
 			main.cpp

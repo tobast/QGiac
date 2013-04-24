@@ -35,51 +35,27 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/gpl.txt>.
  */
 
-#ifndef DEF_MATHDISPLAY
-#define DEF_MATHDISPLAY
-
-#include <QString>
-#include <QLabel>
-#include <QPixmap>
-#include <QImage>
-#include <QMessageBox>
-#include <QApplication>
-
-#include <klfbackend.h> // Display TeX
-
-#include <string>
-
-#include <giac/giac.h>
-
 #include "TexRenderThread.h"
 
-class MathDisplay : public QLabel
+TexRenderThread::TexRenderThread(const QString& text, KLFBackend::klfSettings klfsetts) : text(text), klfsetts(klfsetts)
 {
-	Q_OBJECT
-	public:
-		MathDisplay(giac::context* context, QWidget* parent=0);
-		MathDisplay(giac::context* context, const QString& text, QWidget* parent=0);
+	initKLF();
+}
 
-	public slots:
-		void setRawText(QString text);
+void TexRenderThread::initKLF()
+{
+	klfIn.dpi = 150;
+	klfIn.mathmode = "\\[ ... \\]";
+	klfIn.preamble = QString("\\usepackage{amssymb,amsmath,mathrsfs}");
+	klfIn.fg_color = QApplication::palette().text().color().rgb();
+	klfIn.bg_color = QApplication::palette().window().color().rgb();
+}
 
-	private: //meth
-		void initKLF();
-//		QString toMML(const QString& toConvert);
-		QString toTex(const QString& toConvert);
-		void updateTex(const QString& texStr);
+void TexRenderThread::run()
+{
+	klfIn.latex=text;
+	klfOut = KLFBackend::getLatexFormula(klfIn, klfsetts);
 	
-	private slots:
-		void texRendered(const QImage& image, const QString& errstr);
-
-	private:
-		static bool initDone; // = false
-		static bool klfDisabled; // =false
-		static KLFBackend::klfSettings klfsetts;
-		giac::context* context;
-		QPixmap pixmap;
-		TexRenderThread* renderer;
-};
-
-#endif//DEF_MATHDISPLAY
+	emit resultAvailable(klfOut.result, (klfOut.status == 0) ? "" : klfOut.errorstr);
+}
 

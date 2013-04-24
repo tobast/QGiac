@@ -39,13 +39,14 @@
 
 // STATIC INIT
 bool MathDisplay::initDone = false;
+bool MathDisplay::klfDisabled = false;
 KLFBackend::klfSettings MathDisplay::klfsetts;
 
-MathDisplay::MathDisplay(giac::context* context, QWidget* parent) : QLabel(parent), context(context) 
+MathDisplay::MathDisplay(giac::context* context, QWidget* parent) : QLabel(parent), context(context), renderer(NULL) 
 {
 	initKLF();
 }
-MathDisplay::MathDisplay(giac::context* context, const QString& text, QWidget* parent) : QLabel(parent), context(context)
+MathDisplay::MathDisplay(giac::context* context, const QString& text, QWidget* parent) : QLabel(parent), context(context), renderer(NULL)
 {
 	initKLF();
 	setRawText(text);
@@ -63,17 +64,12 @@ void MathDisplay::initKLF()
 		if(!KLFBackend::detectSettings(&MathDisplay::klfsetts))
 		{
 			QMessageBox::warning(this, tr("TeX error"), tr("Unable to find math formula rendering dependancies (LaTeX, Ghostscript, …). The formulas will be displayed in text mode."));
+			klfDisabled = true;
 			// TODO implement fallback text mode
 		}
 
 		MathDisplay::initDone=true;
 	}
-
-	klfIn.dpi = 150;
-	klfIn.mathmode = "\\[ ... \\]";
-	klfIn.preamble = QString("\\usepackage{amssymb,amsmath,mathrsfs}");
-	klfIn.fg_color = QApplication::palette().text().color().rgb();
-	klfIn.bg_color = QApplication::palette().window().color().rgb();
 }
 
 QString MathDisplay::toTex(const QString& toConvert)
@@ -85,13 +81,34 @@ QString MathDisplay::toTex(const QString& toConvert)
 
 void MathDisplay::updateTex(const QString& texStr)
 {
-	klfIn.latex=texStr;
+	//KLFBackend::klfOutput output = KLFBackend::getLatexFormula(klfIn, MathDisplay::klfsetts);
+
+	//QPixmap outPixmap = QPixmap::fromImage(output.result);
+
+	//setPixmap(outPixmap);
 	
-	KLFBackend::klfOutput output = KLFBackend::getLatexFormula(klfIn, MathDisplay::klfsetts);
+	if(!klfDisabled)
+	{
+		if(renderer != NULL)
+		{
+			renderer->terminate();
+			renderer->wait();
+		}
 
-	QPixmap outPixmap = QPixmap::fromImage(output.result);
+		renderer = new TexRenderThread(texStr, klfsetts);
+		connect(renderer, SIGNAL(resultAvailable(const QImage&, const QString&)), this, SLOT(texRendered(const QImage&, const QString&)));
+		renderer->start(QThread::LowPriority);
+	}
+}
 
-	setPixmap(outPixmap);
+void MathDisplay::texRendered(const QImage& image, const QString& errstr)
+{
+	if(!errstr.isEmpty())
+		QMessageBox::warning(this, tr("Rendering error"), tr("The application failed to render a formula. The renderer returned:\n")+errstr);
+
+	setPixmap(QPixmap::fromImage(image));
 	adjustSize();
+
+	renderer=NULL;
 }
 

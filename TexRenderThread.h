@@ -35,51 +35,35 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/gpl.txt>.
  */
 
-#ifndef DEF_MATHDISPLAY
-#define DEF_MATHDISPLAY
+#ifndef DEF_TEXRENDERTHREAD
+#define DEF_TEXRENDERTHREAD
 
+#include <klfbackend.h>
 #include <QString>
-#include <QLabel>
-#include <QPixmap>
 #include <QImage>
-#include <QMessageBox>
+#include <QThread>
 #include <QApplication>
 
-#include <klfbackend.h> // Display TeX
-
-#include <string>
-
-#include <giac/giac.h>
-
-#include "TexRenderThread.h"
-
-class MathDisplay : public QLabel
+class TexRenderThread : public QThread
 {
 	Q_OBJECT
+
 	public:
-		MathDisplay(giac::context* context, QWidget* parent=0);
-		MathDisplay(giac::context* context, const QString& text, QWidget* parent=0);
+		TexRenderThread(const QString& text, KLFBackend::klfSettings klfsetts);
 
-	public slots:
-		void setRawText(QString text);
+	signals:
+		void resultAvailable(const QImage& img, const QString& errstr);
 
-	private: //meth
+	private:// meth
 		void initKLF();
-//		QString toMML(const QString& toConvert);
-		QString toTex(const QString& toConvert);
-		void updateTex(const QString& texStr);
-	
-	private slots:
-		void texRendered(const QImage& image, const QString& errstr);
+		void run();
 
 	private:
-		static bool initDone; // = false
-		static bool klfDisabled; // =false
-		static KLFBackend::klfSettings klfsetts;
-		giac::context* context;
-		QPixmap pixmap;
-		TexRenderThread* renderer;
+		QString text;
+		KLFBackend::klfSettings klfsetts;
+		KLFBackend::klfInput klfIn;
+		KLFBackend::klfOutput klfOut; // As long as the class is not deleted, the result persists.
 };
 
-#endif//DEF_MATHDISPLAY
+#endif//DEF_TEXRENDERTHREAD
 
