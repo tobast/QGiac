@@ -4,8 +4,6 @@
 
 DEFINES += KLF_SRC_BUILD
 QT += gui xml
-# QMAKEFEATURES += "/usr/share/qt4/mkspecs/features"
-# CONFIG += qwt qwtmathml
 TEMPLATE = app
 TARGET = 
 DEPENDPATH += .
