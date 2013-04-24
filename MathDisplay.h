@@ -39,14 +39,16 @@
 #define DEF_MATHDISPLAY
 
 #include <QString>
+#include <QByteArray>
+#include <QtSvg/QSvgWidget>
 
-#include <qwt/qwt.h>
-#include <qwt/qwt_text_label.h>
-#include <qwt/qwt_text.h>
+#include <string>
+
+#include <QDebug> //FIXME
 
 #include <giac/giac.h>
 
-class MathDisplay : public QwtTextLabel
+class MathDisplay : public QSvgWidget
 {
 	public:
 		MathDisplay(giac::context* context, QWidget* parent=0);
@@ -56,7 +58,8 @@ class MathDisplay : public QwtTextLabel
 		void setRawText(QString text);
 
 	private: //meth
-		QString toMML(const QString& toConvert);
+//		QString toMML(const QString& toConvert);
+		QString toTex(const QString& toConvert);
 
 	private:
 		giac::context* context;

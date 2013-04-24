@@ -2,3 +2,4 @@ moc_*
 *.o
 Makefile
 QGiac
+*.swp

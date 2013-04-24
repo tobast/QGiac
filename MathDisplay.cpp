@@ -37,25 +37,43 @@
 
 #include "MathDisplay.h"
 
-MathDisplay::MathDisplay(giac::context* context, QWidget* parent) : QwtTextLabel(parent), context(context) 
+MathDisplay::MathDisplay(giac::context* context, QWidget* parent) : QSvgWidget(parent), context(context) 
 {
 }
-MathDisplay::MathDisplay(giac::context* context, const QString& text, QWidget* parent) : QwtTextLabel(parent), context(context)
+MathDisplay::MathDisplay(giac::context* context, const QString& text, QWidget* parent) : QSvgWidget(parent), context(context)
 {
-	QwtText mathtext(toMML(text), QwtText::MathMLText);
-	setText(mathtext);
+	setRawText(text);
 }
 
 void MathDisplay::setRawText(QString text)
 {
+/*
 	QwtText mathtext(toMML(text), QwtText::MathMLText);
 	setText(mathtext);
 	resize(sizeHint());
+*/
+	load(QByteArray::fromRawData(toSvg(text).toStdString().c_str(), -1));
+//	qDebug() << toSvg(text);
 }
 
+/*
 QString MathDisplay::toMML(const QString& toConvert)
 {
 	giac::gen inputGen(toConvert.toStdString(), context);
 	return QString(_mathml(inputGen, context).print().c_str());
+}
+*/
+
+QString MathDisplay::toTex(const QString& toConvert)
+{
+	qDebug() << toConvert;
+	giac::gen inputGen(toConvert.toStdString(), context);
+
+//	return QString(gen2tex(inputGen, context).c_str()); // RELEASE VERSION
+
+	/* FIXME DEBUG VERSION */
+	QString out = gen2tex(inputGen, context).c_str();
+	qDebug() << out;
+	return out;
 }
 

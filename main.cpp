@@ -41,15 +41,11 @@
 #include <QLibraryInfo>
 #include <QLocale>
 
-#include <qwt/qwt.h>
-#include <qwt/qwt_mathml_text_engine.h>
-
 #include "GraphicalCore.h"
 
 int main(int argc, char** argv)
 {
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8")); // Strings in files are UTF-8 encoded
-	QwtText::setTextEngine(QwtText::MathMLText, new QwtMathMLTextEngine()); // Setting Qwt text engine to MathML
 
 	QApplication a(argc, argv);
 
