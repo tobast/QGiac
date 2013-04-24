@@ -65,7 +65,7 @@ void MathDisplay::initKLF()
 	{
 		if(!KLFBackend::detectSettings(&MathDisplay::klfsetts))
 		{
-			QMessageBox::warning(this, tr("TeX error"), tr("Unable to find math formula rendering dependancies (LaTeX, Ghostscript, …). The formulas will be displayed in text mode."));
+			QMessageBox::warning(this, tr("TeX error"), tr("Unable to find math formula rendering dependancies (latex and ghostscript executables). The formulas will be displayed in text mode."));
 			klfDisabled = true;
 		}
 
