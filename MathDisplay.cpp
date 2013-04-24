@@ -54,6 +54,8 @@ MathDisplay::MathDisplay(giac::context* context, const QString& text, QWidget* p
 
 void MathDisplay::setRawText(QString text)
 {
+	setText(text);
+	adjustSize();
 	updateTex(toTex(text));
 }
 
@@ -65,7 +67,6 @@ void MathDisplay::initKLF()
 		{
 			QMessageBox::warning(this, tr("TeX error"), tr("Unable to find math formula rendering dependancies (LaTeX, Ghostscript, …). The formulas will be displayed in text mode."));
 			klfDisabled = true;
-			// TODO implement fallback text mode
 		}
 
 		MathDisplay::initDone=true;
@@ -81,24 +82,18 @@ QString MathDisplay::toTex(const QString& toConvert)
 
 void MathDisplay::updateTex(const QString& texStr)
 {
-	//KLFBackend::klfOutput output = KLFBackend::getLatexFormula(klfIn, MathDisplay::klfsetts);
+	if(klfDisabled)
+		return;
 
-	//QPixmap outPixmap = QPixmap::fromImage(output.result);
-
-	//setPixmap(outPixmap);
-	
-	if(!klfDisabled)
+	if(renderer != NULL)
 	{
-		if(renderer != NULL)
-		{
-			renderer->terminate();
-			renderer->wait();
-		}
-
-		renderer = new TexRenderThread(texStr, klfsetts);
-		connect(renderer, SIGNAL(resultAvailable(const QImage&, const QString&)), this, SLOT(texRendered(const QImage&, const QString&)));
-		renderer->start(QThread::LowPriority);
+		renderer->terminate();
+		renderer->wait();
 	}
+
+	renderer = new TexRenderThread(texStr, klfsetts);
+	connect(renderer, SIGNAL(resultAvailable(const QImage&, const QString&)), this, SLOT(texRendered(const QImage&, const QString&)));
+	renderer->start(QThread::LowPriority);
 }
 
 void MathDisplay::texRendered(const QImage& image, const QString& errstr)
