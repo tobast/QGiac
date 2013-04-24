@@ -7,10 +7,11 @@ QT += gui xml
 TEMPLATE = app
 TARGET = 
 DEPENDPATH += .
-INCLUDEPATH += $$PWD/klfbackend/include
+#INCLUDEPATH += $$PWD/klfbackend/include
+unix:INCLUDEPATH += /usr/include/klfbackend
 
-win32: LIBS += -L$$PWD/klfbackend/win32
-else:unix: LIBS += -L$$PWD/klfbackend/linux
+#win32: LIBS += -L$$PWD/klfbackend/win32
+#else:unix: LIBS += -L$$PWD/klfbackend/linux
 
 LIBS += -lgiac -lgmp -lklfbackend -lklftools
 
