@@ -1,0 +1,6 @@
+This project uses external libraries:
+
+- GIAC: CAS library by Bernard Parisse <bernard.parisse@ujf-grenoble.fr>
+- KLFBackend: LaTeX rendering library by Philippe Faist (http://klatexformula.sourceforge.net/)
+
+Thanks to the developpers of the above libraries, who decided to share their source code as a free software.

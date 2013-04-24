@@ -64,9 +64,8 @@ void CalculationWidget::buildWidget()
 	l_upperLine->addWidget(inputLine);
 	l_main->addLayout(l_upperLine);
 
-//	outputLine = new QLabel;
-//	l_main->addWidget(outputLine);
 	outputDisp = new MathDisplay(context);
+	outputDisp->setAlignment(Qt::AlignCenter);
 	l_main->addWidget(outputDisp);
 
 	setLayout(l_main);
@@ -81,13 +80,9 @@ void CalculationWidget::compute() // slot
 	try {
 		giac::gen input(inputLine->text().toStdString(), context);
 		QString out(input.eval(1, context).print().c_str());
-//		outputLine->setText(out);
 		outputDisp->setRawText(out);
 
-//		MathDisplay* mathdisp = new MathDisplay(context, out);
-//		mathdisp->show();
 	} catch(const std::runtime_error& e) {
-//		outputLine->setText(e.what());
 		outputDisp->setRawText(e.what());
 	}
 	emit(computedExpr(id));

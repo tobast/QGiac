@@ -39,16 +39,19 @@
 #define DEF_MATHDISPLAY
 
 #include <QString>
-#include <QByteArray>
-#include <QtSvg/QSvgWidget>
+#include <QLabel>
+#include <QPixmap>
+#include <QImage>
+#include <QMessageBox>
+#include <QApplication>
+
+#include <klfbackend.h> // Display TeX
 
 #include <string>
 
-#include <QDebug> //FIXME
-
 #include <giac/giac.h>
 
-class MathDisplay : public QSvgWidget
+class MathDisplay : public QLabel
 {
 	public:
 		MathDisplay(giac::context* context, QWidget* parent=0);
@@ -58,11 +61,17 @@ class MathDisplay : public QSvgWidget
 		void setRawText(QString text);
 
 	private: //meth
+		void initKLF();
 //		QString toMML(const QString& toConvert);
 		QString toTex(const QString& toConvert);
+		void updateTex(const QString& texStr);
 
 	private:
+		static bool initDone; // = false
+		static KLFBackend::klfSettings klfsetts;
+		KLFBackend::klfInput klfIn;
 		giac::context* context;
+		QPixmap pixmap;
 };
 
 #endif//DEF_MATHDISPLAY

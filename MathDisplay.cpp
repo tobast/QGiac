@@ -37,43 +37,61 @@
 
 #include "MathDisplay.h"
 
-MathDisplay::MathDisplay(giac::context* context, QWidget* parent) : QSvgWidget(parent), context(context) 
+// STATIC INIT
+bool MathDisplay::initDone = false;
+KLFBackend::klfSettings MathDisplay::klfsetts;
+
+MathDisplay::MathDisplay(giac::context* context, QWidget* parent) : QLabel(parent), context(context) 
 {
+	initKLF();
 }
-MathDisplay::MathDisplay(giac::context* context, const QString& text, QWidget* parent) : QSvgWidget(parent), context(context)
+MathDisplay::MathDisplay(giac::context* context, const QString& text, QWidget* parent) : QLabel(parent), context(context)
 {
+	initKLF();
 	setRawText(text);
 }
 
 void MathDisplay::setRawText(QString text)
 {
-/*
-	QwtText mathtext(toMML(text), QwtText::MathMLText);
-	setText(mathtext);
-	resize(sizeHint());
-*/
-	load(QByteArray::fromRawData(toSvg(text).toStdString().c_str(), -1));
-//	qDebug() << toSvg(text);
+	updateTex(toTex(text));
 }
 
-/*
-QString MathDisplay::toMML(const QString& toConvert)
+void MathDisplay::initKLF()
 {
-	giac::gen inputGen(toConvert.toStdString(), context);
-	return QString(_mathml(inputGen, context).print().c_str());
+	if(!MathDisplay::initDone)
+	{
+		if(!KLFBackend::detectSettings(&MathDisplay::klfsetts))
+		{
+			QMessageBox::warning(this, tr("TeX error"), tr("Unable to find math formula rendering dependancies (LaTeX, Ghostscript, …). The formulas will be displayed in text mode."));
+			// TODO implement fallback text mode
+		}
+
+		MathDisplay::initDone=true;
+	}
+
+	klfIn.dpi = 150;
+	klfIn.mathmode = "\\[ ... \\]";
+	klfIn.preamble = QString("\\usepackage{amssymb,amsmath,mathrsfs}");
+	klfIn.fg_color = QApplication::palette().text().color().rgb();
+	klfIn.bg_color = QApplication::palette().window().color().rgb();
 }
-*/
 
 QString MathDisplay::toTex(const QString& toConvert)
 {
-	qDebug() << toConvert;
 	giac::gen inputGen(toConvert.toStdString(), context);
 
-//	return QString(gen2tex(inputGen, context).c_str()); // RELEASE VERSION
+	return QString(gen2tex(inputGen, context).c_str());
+}
 
-	/* FIXME DEBUG VERSION */
-	QString out = gen2tex(inputGen, context).c_str();
-	qDebug() << out;
-	return out;
+void MathDisplay::updateTex(const QString& texStr)
+{
+	klfIn.latex=texStr;
+	
+	KLFBackend::klfOutput output = KLFBackend::getLatexFormula(klfIn, MathDisplay::klfsetts);
+
+	QPixmap outPixmap = QPixmap::fromImage(output.result);
+
+	setPixmap(outPixmap);
+	adjustSize();
 }
 
