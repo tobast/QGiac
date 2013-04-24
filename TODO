@@ -1,7 +1,5 @@
 (in approximative priority order)
 
-- Put LaTeX rendering in a separated thread.
-- Implement fallback text display for the output
 - When a CalculationWidget is focused, tab goes to the next one, shift+tab to the previous.
 - Add a lot of shortcuts, the application should be usable without any mouse
 - "copy" ability on the output of a calculation, returning the text-giac-like result
