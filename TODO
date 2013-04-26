@@ -7,4 +7,5 @@
 - "copy" ability on the output of a calculation, returning the text-giac-like result
 - Designing the application (a lot) : icons and stuff
 - Tooltips displaying GIAC help messages about functions
+- Refuse to compute empty expression
 - Lot of wizards to insert matrix, specific functions, …
