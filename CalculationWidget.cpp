@@ -66,6 +66,7 @@ void CalculationWidget::buildWidget()
 
 	outputDisp = new MathDisplay(context);
 	outputDisp->setAlignment(Qt::AlignCenter);
+	connect(outputDisp, SIGNAL(resized()), this, SLOT(subWidgetResized()));
 	l_main->addWidget(outputDisp);
 
 	setLayout(l_main);
@@ -86,5 +87,10 @@ void CalculationWidget::compute() // slot
 		outputDisp->setRawText(e.what());
 	}
 	emit(computedExpr(id));
+}
+
+void CalculationWidget::subWidgetResized()
+{
+	emit(resized());
 }
 

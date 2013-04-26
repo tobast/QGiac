@@ -63,6 +63,9 @@ class ContextTab : public QScrollArea
 		void buildWidget();
 		void addCalcWidget(bool setFocus=true);
 
+	private slots:
+		void subWidgetResized();
+
 	private:
 		QWidget* containerWidget;
 		QString contextName;

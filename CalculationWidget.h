@@ -65,9 +65,11 @@ class CalculationWidget : public QFrame
 
 	private slots:
 		void compute();
+		void subWidgetResized();
 
 	signals:
 		void computedExpr(const int& id);
+		void resized();
 
 	private:
 		QVBoxLayout* l_main;

@@ -103,6 +103,7 @@ void MathDisplay::texRendered(const QImage& image, const QString& errstr)
 
 	setPixmap(QPixmap::fromImage(image));
 	adjustSize();
+	emit(resized());
 
 	renderer=NULL;
 }

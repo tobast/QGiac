@@ -69,6 +69,7 @@ void ContextTab::buildWidget()
 void ContextTab::addCalcWidget(bool setFocus)
 {
 	CalculationWidget* calcWid = new CalculationWidget(&context, calcWidgets.size()+1);
+
 	l_main->addWidget(calcWid);
 	calcWidgets.append(calcWid);
 
@@ -76,11 +77,20 @@ void ContextTab::addCalcWidget(bool setFocus)
 
 	widget()->resize(widget()->sizeHint());
 
+	connect(calcWid, SIGNAL(resized()), this, SLOT(subWidgetResized()));
+
 	if(setFocus)
 	{
 		qApp->processEvents();
 		calcWid->setFocus(Qt::OtherFocusReason);
 		ensureVisible(0,containerWidget->height(),0,0);
 	}
+}
+
+void ContextTab::subWidgetResized()
+{
+	qApp->processEvents();
+
+	// TODO ensure currently selected widget is visible
 }
 

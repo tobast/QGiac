@@ -1,7 +1,8 @@
 (in approximative priority order)
 
-- Ensure the focused CalculationWidget is still visible when text is replaced by TeX
-- When a CalculationWidget is focused, tab goes to the next one, shift+tab to the previous.
+(1) - Allow O(1) identification of currently focused CalculationWidget
+[IN PROGRESS - REQUIRES (1)] - Ensure the focused CalculationWidget is still visible when text is replaced by TeX 
+[REQUIRES (1)] - When a CalculationWidget is focused, tab goes to the next one, shift+tab to the previous.
 - Add a lot of shortcuts, the application should be usable without any mouse
 - "copy" ability on the output of a calculation, returning the text-giac-like result
 - Designing the application (a lot) : icons and stuff

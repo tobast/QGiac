@@ -63,6 +63,9 @@ class MathDisplay : public QLabel
 	public slots:
 		void setRawText(QString text);
 
+	signals:
+		void resized();
+
 	private: //meth
 		void initKLF();
 //		QString toMML(const QString& toConvert);
