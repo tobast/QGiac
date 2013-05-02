@@ -20,11 +20,13 @@ HEADERS += 	ContextTab.h \
 			GraphicalCore.h \
 			CalculationWidget.h \
 			MathDisplay.h \
-			TexRenderThread.h
+			TexRenderThread.h \
+			WizardMatrix.h
 
 SOURCES += 	ContextTab.cpp \
 			GraphicalCore.cpp \
 			CalculationWidget.cpp \
 			MathDisplay.cpp \
 			TexRenderThread.cpp \
+			WizardMatrix.cpp \
 			main.cpp

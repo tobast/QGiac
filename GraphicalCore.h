@@ -48,6 +48,7 @@
 #include <QMenu>
 
 #include "ContextTab.h"
+#include "WizardMatrix.h"
 
 class GraphicalCore : public QMainWindow
 {
@@ -66,6 +67,9 @@ class GraphicalCore : public QMainWindow
 		void delContext(const int& tabId);
 		void quitOnAction();
 
+		// Wizards
+		void openWizard_matrix();
+
 	private:
 		// Actions
 		QMenuBar* menubar;
@@ -74,6 +78,9 @@ class GraphicalCore : public QMainWindow
 		QAction* act_addContext;
 		QAction* act_delContext;
 		QAction* act_quit;
+
+		QMenu* menu_wizards;
+		QAction* act_wizMatrix;
 	
 		// Central widget
 		QWidget* centralWidget;

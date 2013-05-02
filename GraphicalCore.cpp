@@ -57,6 +57,7 @@ void GraphicalCore::buildMenuBar()
 	menubar = new QMenuBar;
 	setMenuBar(menubar);
 
+	// ===== FILE MENU =====
 	menu_file = menubar->addMenu(tr("File"));
 
 	act_addContext = menu_file->addAction(tr("New context"), this, SLOT(addContext()), QKeySequence(QKeySequence::AddTab));
@@ -68,6 +69,10 @@ void GraphicalCore::buildMenuBar()
 	if(seq.isEmpty())
 		seq=QKeySequence("Ctrl+Q");
 	act_quit = menu_file->addAction(tr("Quit"), this, SLOT(quitOnAction()), seq);
+
+	// ==== WIZARDS MENU ====
+	menu_wizards = menubar->addMenu(tr("Wizards"));
+	act_wizMatrix = menu_wizards->addAction(tr("Matrix wizard"), this, SLOT(openWizard_matrix()));
 }
 
 void GraphicalCore::buildCentralWidget()
@@ -126,5 +131,10 @@ void GraphicalCore::quitOnAction()
 	if(QMessageBox::question(this, tr("Are you sure?"), tr("Do you really want to quit QGiac? Your session will not be saved."),
 							QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Yes)
 		qApp->quit();
+}
+
+void GraphicalCore::openWizard_matrix()
+{
+	WizardMatrix::open();
 }
 
