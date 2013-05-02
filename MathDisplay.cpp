@@ -45,18 +45,50 @@ KLFBackend::klfSettings MathDisplay::klfsetts;
 MathDisplay::MathDisplay(giac::context* context, QWidget* parent) : QLabel(parent), context(context), renderer(NULL) 
 {
 	initKLF();
+	buildActions();
 }
 MathDisplay::MathDisplay(giac::context* context, const QString& text, QWidget* parent) : QLabel(parent), context(context), renderer(NULL)
 {
 	initKLF();
+	buildActions();
 	setRawText(text);
 }
 
 void MathDisplay::setRawText(QString text)
 {
+	rawText = text;
 	setText(text);
+	act_copyImage->setEnabled(false);
 	adjustSize();
 	updateTex(toTex(text));
+}
+
+void MathDisplay::copyText()
+{
+	QClipboard *cb = QApplication::clipboard();
+	cb->setText(rawText);
+}
+
+void MathDisplay::copyImage()
+{
+	if(pixmap() == 0)
+		return;
+	QClipboard *cb = QApplication::clipboard();
+	cb->setPixmap(*pixmap());
+}
+
+void MathDisplay::buildActions()
+{
+	setContextMenuPolicy(Qt::ActionsContextMenu);
+
+	act_copyText = new QAction(tr("Copy text"), this);
+	connect(act_copyText, SIGNAL(triggered()), this, SLOT(copyText()));
+	this->addAction(act_copyText);
+
+	act_copyImage = new QAction(tr("Copy image"), this);
+	connect(act_copyImage, SIGNAL(triggered()), this, SLOT(copyImage()));
+	this->addAction(act_copyImage);
+	act_copyImage->setEnabled(false);
 }
 
 void MathDisplay::initKLF()
@@ -104,6 +136,8 @@ void MathDisplay::texRendered(const QImage& image, const QString& errstr)
 	setPixmap(QPixmap::fromImage(image));
 	adjustSize();
 	emit(resized());
+
+	act_copyImage->setEnabled(true);
 
 	renderer=NULL;
 }

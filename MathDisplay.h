@@ -44,6 +44,8 @@
 #include <QImage>
 #include <QMessageBox>
 #include <QApplication>
+#include <QAction>
+#include <QClipboard>
 
 #include <klfbackend.h> // Display TeX
 
@@ -62,11 +64,14 @@ class MathDisplay : public QLabel
 
 	public slots:
 		void setRawText(QString text);
+		void copyText();
+		void copyImage();
 
 	signals:
 		void resized();
 
 	private: //meth
+		void buildActions();
 		void initKLF();
 //		QString toMML(const QString& toConvert);
 		QString toTex(const QString& toConvert);
@@ -79,8 +84,11 @@ class MathDisplay : public QLabel
 		static bool initDone; // = false
 		static bool klfDisabled; // =false
 		static KLFBackend::klfSettings klfsetts;
+
+		QString rawText;
+		QAction* act_copyText;
+		QAction* act_copyImage;
 		giac::context* context;
-		QPixmap pixmap;
 		TexRenderThread* renderer;
 };
 
