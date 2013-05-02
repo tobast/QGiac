@@ -47,7 +47,27 @@ void GraphicalCore::buildWidget()
 {
 	setWindowTitle("QGiac");
 	resize(800,600);
+
 	buildCentralWidget();
+	buildMenuBar();
+}
+
+void GraphicalCore::buildMenuBar()
+{
+	menubar = new QMenuBar;
+	setMenuBar(menubar);
+
+	menu_file = menubar->addMenu(tr("File"));
+
+	act_addContext = menu_file->addAction(tr("New context"), this, SLOT(addContext()), QKeySequence(QKeySequence::AddTab));
+	act_delContext = menu_file->addAction(tr("Close context"), this, SLOT(delCurContext()), QKeySequence(QKeySequence::Close));
+
+	menu_file->addSeparator();
+
+	QKeySequence seq(QKeySequence::Quit);
+	if(seq.isEmpty())
+		seq=QKeySequence("Ctrl+Q");
+	act_quit = menu_file->addAction(tr("Quit"), this, SLOT(quitOnAction()), seq);
 }
 
 void GraphicalCore::buildCentralWidget()
@@ -79,6 +99,11 @@ void GraphicalCore::addContext()
 	tab->getCalcWidgets().back()->setFocus(Qt::OtherFocusReason);
 }
 
+void GraphicalCore::delCurContext()
+{
+	delContext(sessions->currentIndex());
+}
+
 void GraphicalCore::delContext(const int& tabId)
 {
 	QMessageBox::StandardButton btn = QMessageBox::question(this, tr("Close context?"), tr("Are you sure you want to close this context? All the calculation done will be lost."), QMessageBox::Yes | QMessageBox::No);
@@ -94,5 +119,12 @@ void GraphicalCore::delContext(const int& tabId)
 	
 	if(sessions->count() == 0)
 		addContext();
+}
+
+void GraphicalCore::quitOnAction()
+{
+	if(QMessageBox::question(this, tr("Are you sure?"), tr("Do you really want to quit QGiac? Your session will not be saved."),
+							QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Yes)
+		qApp->quit();
 }
 

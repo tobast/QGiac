@@ -43,6 +43,9 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QAction>
+#include <QMenuBar>
+#include <QMenu>
 
 #include "ContextTab.h"
 
@@ -54,19 +57,31 @@ class GraphicalCore : public QMainWindow
 
 	private: //meth
 		void buildWidget();
+		void buildMenuBar();
 		void buildCentralWidget();
 
 	private slots:
 		void addContext();
+		void delCurContext();
 		void delContext(const int& tabId);
+		void quitOnAction();
 
 	private:
+		// Actions
+		QMenuBar* menubar;
+		
+		QMenu* menu_file;
+		QAction* act_addContext;
+		QAction* act_delContext;
+		QAction* act_quit;
+	
+		// Central widget
 		QWidget* centralWidget;
 		QVBoxLayout* l_main;
 		QTabWidget* sessions;
 		QPushButton* btnAddTab;
 
-		unsigned int nextSessionId;
+		unsigned int nextSessionId; // If, by chance, it reaches its limit, the unsigned type will make it cycle back to 0.
 };
 
 #endif//DEF_GRAPHICALCORE
