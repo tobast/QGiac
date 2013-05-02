@@ -77,6 +77,11 @@ void MathDisplay::copyImage()
 	cb->setPixmap(*pixmap());
 }
 
+void MathDisplay::saveImage()
+{
+
+}
+
 void MathDisplay::buildActions()
 {
 	setContextMenuPolicy(Qt::ActionsContextMenu);

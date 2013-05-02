@@ -66,6 +66,7 @@ class MathDisplay : public QLabel
 		void setRawText(QString text);
 		void copyText();
 		void copyImage();
+		void saveImage();
 
 	signals:
 		void resized();
