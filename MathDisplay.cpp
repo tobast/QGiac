@@ -79,7 +79,7 @@ void MathDisplay::copyImage()
 
 void MathDisplay::saveImage()
 {
-
+	// TODO with reference
 }
 
 void MathDisplay::buildActions()
