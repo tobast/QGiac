@@ -78,6 +78,9 @@ void CalculationWidget::buildWidget()
 
 void CalculationWidget::compute() // slot
 {
+	if(inputLine->text().isEmpty())
+		return;
+
 	try {
 		giac::gen input(inputLine->text().toStdString(), context);
 		QString out(input.eval(1, context).print().c_str());
