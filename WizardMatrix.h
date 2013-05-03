@@ -46,6 +46,9 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QString>
+#include <QMessageBox>
+#include <QClipboard>
+#include <QApplication>
 
 class WizardMatrix : public QMainWindow
 {
@@ -71,6 +74,7 @@ class WizardMatrix : public QMainWindow
 	private: //meth
 		void buildWidget(const int& nbRows=1, const int& nbCols=1);
 		QLineEdit* lineEditAllocator();
+		QLineEdit* getLineEdit(const int& row, const int& col);
 
 	private:
 		QWidget* centralWidget;

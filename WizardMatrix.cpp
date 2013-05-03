@@ -53,10 +53,10 @@ QString WizardMatrix::toText()
 	{
 		for(int col=0; col < l_grid->columnCount()-1; col++)
 		{
-			QString cell = l_grid->itemAtPosition(row,col)->widget()->text();
+			QString cell = getLineEdit(row,col)->text();
 			if(cell.contains("[") || cell.contains("]"))
 			{
-				QMessageBox::warning(this, tr("Invalid value"), tr(QString("Your cell %i;%i contains a '[' or ']' forbidden character.").arg(row).arg(col)));
+				QMessageBox::warning(this, tr("Invalid value"), QString(tr("Your cell %i;%i contains a '[' or ']' forbidden character.")).arg(row).arg(col));
 				return "";
 			}
 			out+=cell;
@@ -78,9 +78,28 @@ void WizardMatrix::open()
 }
 
 void WizardMatrix::addRow()
-copyMatrix()
 {
-	QClibboard* cb = QApplication::clipboard();
+	int curRow = l_grid->rowCount()-1;
+
+	l_grid->addWidget(new QLabel(QString::number(curRow)), curRow, 0);
+	l_grid->addWidget(btn_addRow, curRow+1,0);
+	for(int col=1; col < l_grid->columnCount()-1; col++)
+		l_grid->addWidget(lineEditAllocator(), curRow, col);
+}
+
+void WizardMatrix::addCol()
+{
+	int curCol = l_grid->columnCount()-1;
+
+	l_grid->addWidget(new QLabel(QString::number(curCol)), 0,curCol);
+	l_grid->addWidget(btn_addCol, 0,curCol+1);
+	for(int row=1; row < l_grid->rowCount()-1; row++)
+		l_grid->addWidget(lineEditAllocator(), row, curCol);
+}
+
+void WizardMatrix::copyMatrix()
+{
+	QClipboard* cb = QApplication::clipboard();
 	QString text=toText();
 	if(text.isEmpty())
 		return;
@@ -125,5 +144,14 @@ void WizardMatrix::buildWidget(const int& nbRows, const int& nbCols)
 QLineEdit* WizardMatrix::lineEditAllocator()
 {
 	return new QLineEdit;
+}
+
+QLineEdit* WizardMatrix::getLineEdit(const int& row, const int& col)
+{
+	QWidget* wid = l_grid->itemAtPosition(row,col)->widget();
+	QLineEdit* le = static_cast<QLineEdit*>(wid);
+	if(le == 0)
+		return NULL;
+	return le;
 }
 
