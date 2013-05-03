@@ -49,9 +49,11 @@ WizardMatrix::WizardMatrix(const int& nbRows, const int& nbCols, QWidget* parent
 QString WizardMatrix::toText()
 {
 	QString out="[";
+
 	for(int row=1; row < l_grid->rowCount()-1; row++)
 	{
-		for(int col=0; col < l_grid->columnCount()-1; col++)
+		out+="[";
+		for(int col=1; col < l_grid->columnCount()-1; col++)
 		{
 			QString cell = getLineEdit(row,col)->text();
 			if(cell.contains("[") || cell.contains("]"))
@@ -60,10 +62,12 @@ QString WizardMatrix::toText()
 				return "";
 			}
 			out+=cell;
-			out+=",";
+
+			if(col+1 < l_grid->columnCount()-1)
+				out+=",";
 		}
 		if(row+1 < l_grid->rowCount()-1)
-			out+="],[";
+			out+="],";
 		else
 			out+="]";
 	}
@@ -117,7 +121,7 @@ void WizardMatrix::buildWidget(const int& nbRows, const int& nbCols)
 	for(int col=1; col <= nbCols; col++)
 		l_grid->addWidget(new QLabel(QString::number(col)), 0, col);
 	for(int row=1; row <= nbCols; row++)
-		l_grid->addWidget(new QLabel(QString::number(row)), row, 0);
+		l_grid->addWidget(new QLabel(QString::number(row)), row, 0, 1,1, Qt::AlignRight);
 
 	// text fields 
 	for(int row=1; row <= nbRows; row++)
@@ -125,8 +129,10 @@ void WizardMatrix::buildWidget(const int& nbRows, const int& nbCols)
 			l_grid->addWidget(lineEditAllocator(), row,col);
 
 	btn_addRow = new QPushButton("+");
+	btn_addRow->setMaximumWidth(30);
 	connect(btn_addRow, SIGNAL(clicked()), this, SLOT(addRow()));
 	btn_addCol = new QPushButton("+");
+	btn_addCol->setMaximumWidth(30);
 	connect(btn_addCol, SIGNAL(clicked()), this, SLOT(addCol()));
 
 	l_grid->addWidget(btn_addRow, nbRows+1, 0);
@@ -137,13 +143,20 @@ void WizardMatrix::buildWidget(const int& nbRows, const int& nbCols)
 
 	l_main->addLayout(l_grid);
 
+	btn_copy = new QPushButton(tr("Copy matrix to clipboard"));
+	connect(btn_copy, SIGNAL(clicked()), this, SLOT(copyMatrix()));
+	l_main->addWidget(btn_copy);
+
 	centralWidget->setLayout(l_main);
 	setCentralWidget(centralWidget);
 }
 
 QLineEdit* WizardMatrix::lineEditAllocator()
 {
-	return new QLineEdit;
+	QLineEdit* le = new QLineEdit;
+	le->setMinimumWidth(20);
+	le->setMaximumWidth(30);
+	return le;
 }
 
 QLineEdit* WizardMatrix::getLineEdit(const int& row, const int& col)
