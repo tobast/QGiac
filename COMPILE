@@ -1,0 +1,19 @@
+Dependancies:
+	- GIAC : http://www-fourier.ujf-grenoble.fr/~parisse/giac_compile.html
+		* I recommend using the "latest evolving source"
+		* Headers files shall be placed in a "giac" subdir in your compiler's "include" directory
+		* QGiac is statically linked, .a file(s) are needed.
+	- KLatexFormula : http://klatexformula.sourceforge.net/
+		* Please refer to http://qt-project.org/wiki/Qt_and_LaTeX_via_KLFBackend for compiling procedure - you do not need to compile the GUI
+		* QGiac needs every header file in src/klfbackend, libklftools.a and libklfbackend.a
+		* Headers files shall be placed in a "klfbackend" subdir of your compiler's "include" directory
+
+When you have satisfied the above dependancies, you can compile QGiac :
+
+* Linux/unix:
+	$ qmake (qmake-qt4 on some OS)
+	$ make
+
+* Windows
+	$ qmake
+	$ mingw32-make
