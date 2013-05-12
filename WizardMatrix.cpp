@@ -85,10 +85,24 @@ void WizardMatrix::addRow()
 {
 	int curRow = l_grid->rowCount()-1;
 
-	l_grid->addWidget(new QLabel(QString::number(curRow)), curRow, 0);
+	QLabel* lbl = new QLabel(QString::number(curRow));
+	lbl->setAlignment(Qt::AlignRight);
+	l_grid->addWidget(lbl, curRow, 0);
 	l_grid->addWidget(btn_addRow, curRow+1,0);
+
+	QLineEdit* prevLE=NULL;
+	if(curRow > 1)
+		prevLE = getLineEdit(curRow-1, l_grid->columnCount()-2);
+
 	for(int col=1; col < l_grid->columnCount()-1; col++)
-		l_grid->addWidget(lineEditAllocator(), curRow, col);
+	{
+		QLineEdit* le = lineEditAllocator();
+		l_grid->addWidget(le, curRow, col);
+
+		if(prevLE != NULL)
+			setTabOrder(prevLE, le);
+		prevLE = le;
+	}
 }
 
 void WizardMatrix::addCol()
@@ -98,7 +112,17 @@ void WizardMatrix::addCol()
 	l_grid->addWidget(new QLabel(QString::number(curCol)), 0,curCol);
 	l_grid->addWidget(btn_addCol, 0,curCol+1);
 	for(int row=1; row < l_grid->rowCount()-1; row++)
-		l_grid->addWidget(lineEditAllocator(), row, curCol);
+	{
+		QLineEdit* le = lineEditAllocator();
+		l_grid->addWidget(le, row, curCol);
+
+		if(curCol-1 > 0)
+		{
+			setTabOrder(getLineEdit(row, curCol-1), le);
+			if(row+1 < l_grid->rowCount()-1)
+				setTabOrder(le, getLineEdit(row+1, 1));
+		}
+	}
 }
 
 void WizardMatrix::copyMatrix()
@@ -128,11 +152,22 @@ void WizardMatrix::buildWidget(const int& nbRows, const int& nbCols)
 		for(int col=1; col <= nbCols; col++)
 			l_grid->addWidget(lineEditAllocator(), row,col);
 
+	act_addRow = new QAction(tr("Add row"), this);
+	addAction(act_addRow);
+	act_addRow->setShortcut(QKeySequence("Ctrl+R"));
+	connect(act_addRow, SIGNAL(triggered()), this, SLOT(addRow()));
+	act_addCol = new QAction(tr("Add col"), this);
+	addAction(act_addCol);
+	act_addCol->setShortcut(QKeySequence("Ctrl+L"));
+	connect(act_addCol, SIGNAL(triggered()), this, SLOT(addCol()));
+
 	btn_addRow = new QPushButton("+");
 	btn_addRow->setMaximumWidth(30);
+	btn_addRow->setToolTip(tr("Adds a row (%1)").arg(act_addRow->shortcut().toString()));
 	connect(btn_addRow, SIGNAL(clicked()), this, SLOT(addRow()));
 	btn_addCol = new QPushButton("+");
 	btn_addCol->setMaximumWidth(30);
+	btn_addCol->setToolTip(tr("Adds a column (%1)").arg(act_addCol->shortcut().toString()));
 	connect(btn_addCol, SIGNAL(clicked()), this, SLOT(addCol()));
 
 	l_grid->addWidget(btn_addRow, nbRows+1, 0);
@@ -155,7 +190,7 @@ QLineEdit* WizardMatrix::lineEditAllocator()
 {
 	QLineEdit* le = new QLineEdit;
 	le->setMinimumWidth(20);
-	le->setMaximumWidth(30);
+	le->setMaximumWidth(40);
 	return le;
 }
 

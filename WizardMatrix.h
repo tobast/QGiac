@@ -49,6 +49,8 @@
 #include <QMessageBox>
 #include <QClipboard>
 #include <QApplication>
+#include <QAction>
+#include <QKeySequence>
 
 class WizardMatrix : public QMainWindow
 {
@@ -82,7 +84,9 @@ class WizardMatrix : public QMainWindow
 
 		QGridLayout* l_grid;
 		QPushButton* btn_addRow;
+		QAction* act_addRow;
 		QPushButton* btn_addCol;
+		QAction* act_addCol;
 
 		QPushButton* btn_copy;
 };
