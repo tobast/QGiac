@@ -79,6 +79,12 @@ void MathDisplay::copyText()
 	cb->setText(rawText);
 }
 
+void MathDisplay::copyLatex()
+{
+	QClipboard *cb = QApplication::clipboard();
+	cb->setText(toTex(rawText));
+}
+
 void MathDisplay::copyImage()
 {
 	if(pixmap() == 0)
@@ -111,6 +117,10 @@ void MathDisplay::buildActions()
 
 	act_copyText = new QAction(tr("Copy text"), this);
 	connect(act_copyText, SIGNAL(triggered()), this, SLOT(copyText()));
+	this->addAction(act_copyText);
+
+	act_copyText = new QAction(tr("Copy LaTeX code"), this);
+	connect(act_copyText, SIGNAL(triggered()), this, SLOT(copyLatex()));
 	this->addAction(act_copyText);
 
 	act_copyImage = new QAction(tr("Copy image"), this);

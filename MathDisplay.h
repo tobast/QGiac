@@ -67,6 +67,7 @@ class MathDisplay : public QLabel
 	public slots:
 		void setRawText(QString text, const bool processLatex=true);
 		void copyText();
+		void copyLatex();
 		void copyImage();
 		void saveImage();
 
@@ -94,6 +95,7 @@ class MathDisplay : public QLabel
 
 		QString rawText;
 		QAction* act_copyText;
+		QAction* act_copyLatex;
 		QAction* act_copyImage;
 		QAction* act_saveImage;
 		giac::context* context;
