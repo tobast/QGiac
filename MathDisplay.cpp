@@ -42,12 +42,14 @@ bool MathDisplay::initDone = false;
 bool MathDisplay::klfDisabled = false;
 KLFBackend::klfSettings MathDisplay::klfsetts;
 
-MathDisplay::MathDisplay(giac::context* context, QWidget* parent) : QLabel(parent), context(context), renderer(NULL) 
+MathDisplay::MathDisplay(giac::context* context, QWidget* parent) :
+	QLabel(parent), context(context), renderer(NULL), unthemedRenderer(NULL) 
 {
 	initKLF();
 	buildActions();
 }
-MathDisplay::MathDisplay(giac::context* context, const QString& text, QWidget* parent) : QLabel(parent), context(context), renderer(NULL)
+MathDisplay::MathDisplay(giac::context* context, const QString& text, QWidget* parent) :
+	QLabel(parent), context(context), renderer(NULL), unthemedRenderer(NULL)
 {
 	initKLF();
 	buildActions();
@@ -60,7 +62,12 @@ void MathDisplay::setRawText(QString text)
 	setText(text);
 	act_copyImage->setEnabled(false);
 	adjustSize();
-	updateTex(toTex(text));
+
+	QString tex = toTex(text);
+	updateTex(tex);
+
+	if(needsUnthemedRender)
+		updateUnthemedTex(tex);
 }
 
 void MathDisplay::copyText()
@@ -74,7 +81,8 @@ void MathDisplay::copyImage()
 	if(pixmap() == 0)
 		return;
 	QClipboard *cb = QApplication::clipboard();
-	cb->setPixmap(*pixmap());
+
+	cb->setImage(unthemedRender);
 }
 
 void MathDisplay::saveImage()
@@ -108,6 +116,9 @@ void MathDisplay::initKLF()
 
 		MathDisplay::initDone=true;
 	}
+
+	// If theme colors are not black on white, we have to gen another image
+	needsUnthemedRender = ! TexRenderThread::defaultMatchUsed();	
 }
 
 QString MathDisplay::toTex(const QString& toConvert)
@@ -119,18 +130,27 @@ QString MathDisplay::toTex(const QString& toConvert)
 
 void MathDisplay::updateTex(const QString& texStr)
 {
+	updateTexOf(texStr, renderer, SLOT(texRendered(const QImage&, const QString&)), false);
+}
+void MathDisplay::updateUnthemedTex(const QString& texStr)
+{
+	updateTexOf(texStr, unthemedRenderer, SLOT(unthemedTexRendered(const QImage&, const QString&)), true);
+}
+
+void MathDisplay::updateTexOf(const QString& texStr, TexRenderThread* renThread, const char* renderedSlot, const bool isUnthemed)
+{
 	if(klfDisabled)
 		return;
 
-	if(renderer != NULL)
+	if(renThread != NULL)
 	{
-		renderer->terminate();
-		renderer->wait();
+		renThread->terminate();
+		renThread->wait();
 	}
 
-	renderer = new TexRenderThread(texStr, klfsetts);
-	connect(renderer, SIGNAL(resultAvailable(const QImage&, const QString&)), this, SLOT(texRendered(const QImage&, const QString&)));
-	renderer->start(QThread::LowPriority);
+	renThread = new TexRenderThread(texStr, klfsetts, isUnthemed);
+	connect(renThread, SIGNAL(resultAvailable(const QImage&, const QString&)), this, renderedSlot);
+	renThread->start(QThread::LowPriority);
 }
 
 void MathDisplay::texRendered(const QImage& image, const QString& errstr)
@@ -138,12 +158,29 @@ void MathDisplay::texRendered(const QImage& image, const QString& errstr)
 	if(!errstr.isEmpty())
 		QMessageBox::warning(this, tr("Rendering error"), tr("The application failed to render a formula. The renderer returned:\n")+errstr);
 
+	unthemedRender = image;
 	setPixmap(QPixmap::fromImage(image));
 	adjustSize();
 	emit(resized());
 
-	act_copyImage->setEnabled(true);
+	if(!needsUnthemedRender)
+		act_copyImage->setEnabled(true);
 
 	renderer=NULL;
+}
+
+void MathDisplay::unthemedTexRendered(const QImage& image, const QString& errstr)
+{
+	if(!errstr.isEmpty())
+	{
+		QMessageBox::warning(this, tr("Rendering error for unthemed result"),
+				tr("The application failed to render a formula in its unthemed form"
+				   "(ie., with default backgroud/foreground colors). The renderer returned: \n")+errstr);
+	}
+
+	unthemedRender = image;
+	act_copyImage->setEnabled(true);
+
+	unthemedRenderer=NULL;
 }
 

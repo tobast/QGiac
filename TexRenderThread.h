@@ -49,13 +49,16 @@ class TexRenderThread : public QThread
 	Q_OBJECT
 
 	public:
-		TexRenderThread(const QString& text, KLFBackend::klfSettings klfsetts);
+		TexRenderThread(const QString& text, KLFBackend::klfSettings klfsetts, const bool defaultColors=false);
+		static const QColor& getDefaultFg() { return TexRenderThread::def_fgColor; }
+		static const QColor& getDefaultBg() { return TexRenderThread::def_bgColor; }
+		static bool defaultMatchUsed();
 
 	signals:
 		void resultAvailable(const QImage& img, const QString& errstr);
 
 	private:// meth
-		void initKLF();
+		void initKLF(const bool& defaultColors);
 		void run();
 
 	private:
@@ -63,6 +66,8 @@ class TexRenderThread : public QThread
 		KLFBackend::klfSettings klfsetts;
 		KLFBackend::klfInput klfIn;
 		KLFBackend::klfOutput klfOut; // As long as the class is not deleted, the result persists.
+		static const QColor def_fgColor;
+		static const QColor def_bgColor;
 };
 
 #endif//DEF_TEXRENDERTHREAD

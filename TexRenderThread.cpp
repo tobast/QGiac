@@ -37,18 +37,36 @@
 
 #include "TexRenderThread.h"
 
-TexRenderThread::TexRenderThread(const QString& text, KLFBackend::klfSettings klfsetts) : text(text), klfsetts(klfsetts)
+const QColor TexRenderThread::def_fgColor(0,0,0);
+const QColor TexRenderThread::def_bgColor(0xff, 0xff, 0xff);
+
+TexRenderThread::TexRenderThread(const QString& text, KLFBackend::klfSettings klfsetts, const bool defaultColors) : text(text), klfsetts(klfsetts)
 {
-	initKLF();
+	initKLF(defaultColors);
 }
 
-void TexRenderThread::initKLF()
+bool TexRenderThread::defaultMatchUsed()
+{
+	return (TexRenderThread::def_fgColor == QApplication::palette().text().color()) &&
+		(TexRenderThread::def_bgColor == QApplication::palette().window().color());
+}
+
+void TexRenderThread::initKLF(const bool& defaultColors)
 {
 	klfIn.dpi = 150;
 	klfIn.mathmode = "\\[ ... \\]";
 	klfIn.preamble = QString("\\usepackage{amssymb,amsmath,mathrsfs}");
-	klfIn.fg_color = QApplication::palette().text().color().rgb();
-	klfIn.bg_color = QApplication::palette().window().color().rgb();
+
+	if(defaultColors)
+	{
+		klfIn.fg_color = def_fgColor.rgb();	// Defaulting to white
+		klfIn.bg_color = def_bgColor.rgb();	// Defaulting to black
+	}
+	else
+	{
+		klfIn.fg_color = QApplication::palette().text().color().rgb();
+		klfIn.bg_color = QApplication::palette().window().color().rgb();
+	}
 }
 
 void TexRenderThread::run()

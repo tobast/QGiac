@@ -46,6 +46,7 @@
 #include <QApplication>
 #include <QAction>
 #include <QClipboard>
+#include <QFileDialog>
 
 #include <klfbackend.h> // Display TeX
 
@@ -77,9 +78,12 @@ class MathDisplay : public QLabel
 //		QString toMML(const QString& toConvert);
 		QString toTex(const QString& toConvert);
 		void updateTex(const QString& texStr);
+		void updateUnthemedTex(const QString& texStr);
+		void updateTexOf(const QString& texStr, TexRenderThread* renThread, const char* renderedSlot, const bool isUnthemed);
 	
 	private slots:
 		void texRendered(const QImage& image, const QString& errstr);
+		void unthemedTexRendered(const QImage& image, const QString& errstr);
 
 	private:
 		static bool initDone; // = false
@@ -91,6 +95,10 @@ class MathDisplay : public QLabel
 		QAction* act_copyImage;
 		giac::context* context;
 		TexRenderThread* renderer;
+
+		bool needsUnthemedRender;
+		TexRenderThread* unthemedRenderer;
+		QImage unthemedRender;
 };
 
 #endif//DEF_MATHDISPLAY
