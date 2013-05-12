@@ -65,7 +65,7 @@ class MathDisplay : public QLabel
 		MathDisplay(giac::context* context, const QString& text, QWidget* parent=0);
 
 	public slots:
-		void setRawText(QString text);
+		void setRawText(QString text, const bool processLatex=true);
 		void copyText();
 		void copyImage();
 		void saveImage();

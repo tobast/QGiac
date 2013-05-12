@@ -56,18 +56,21 @@ MathDisplay::MathDisplay(giac::context* context, const QString& text, QWidget* p
 	setRawText(text);
 }
 
-void MathDisplay::setRawText(QString text)
+void MathDisplay::setRawText(QString text, const bool processLatex)
 {
 	rawText = text;
 	renderAvailable(false);
 	setText(text);
 	adjustSize();
 
-	QString tex = toTex(text);
-	updateTex(tex);
+	if(processLatex)
+	{
+		QString tex = toTex(text);
+		updateTex(tex);
 
-	if(needsUnthemedRender)
-		updateUnthemedTex(tex);
+		if(needsUnthemedRender)
+			updateUnthemedTex(tex);
+	}
 }
 
 void MathDisplay::copyText()
@@ -192,7 +195,7 @@ void MathDisplay::unthemedTexRendered(const QImage& image, const QString& errstr
 	{
 		QMessageBox::warning(this, tr("Rendering error for unthemed result"),
 				tr("The application failed to render a formula in its unthemed form"
-				   "(ie., with default backgroud/foreground colors). The renderer returned: \n")+errstr);
+					"(ie., with default backgroud/foreground colors). The renderer returned: \n")+errstr);
 	}
 
 	unthemedRender = image;

@@ -85,10 +85,10 @@ void CalculationWidget::compute() // slot
 		giac::gen input(inputLine->text().toStdString(), context);
 		QString out(input.eval(1, context).print().c_str());
 		outputDisp->setRawText(out);
-
 	} catch(const std::runtime_error& e) {
-		outputDisp->setRawText(e.what());
+		outputDisp->setRawText(e.what(), false);
 	}
+	outputDisp->setAlignment(Qt::AlignCenter);
 	emit(computedExpr(id));
 }
 
