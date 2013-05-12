@@ -59,8 +59,8 @@ MathDisplay::MathDisplay(giac::context* context, const QString& text, QWidget* p
 void MathDisplay::setRawText(QString text)
 {
 	rawText = text;
+	renderAvailable(false);
 	setText(text);
-	act_copyImage->setEnabled(false);
 	adjustSize();
 
 	QString tex = toTex(text);
@@ -87,7 +87,19 @@ void MathDisplay::copyImage()
 
 void MathDisplay::saveImage()
 {
-	// TODO with reference
+	QString filepath = QFileDialog::getSaveFileName(this, tr("Save as..."), QDir::homePath(),
+			tr("Images (*.png *.jpg *.bmp)"));	// TODO improve default dir (go to last used one)
+	if(filepath.isEmpty())
+		return;
+
+	int lastSlash = filepath.lastIndexOf('/');
+	int lastDot = filepath.lastIndexOf('.');
+
+	if(lastDot == -1 || (lastSlash >= lastDot))
+		filepath.append(".png");
+
+	if(!QPixmap::fromImage(unthemedRender).save(filepath))
+		QMessageBox::warning(this, tr("Error"), tr("Cannot save this image as %1. Please check your file name.").arg(filepath));
 }
 
 void MathDisplay::buildActions()
@@ -100,8 +112,13 @@ void MathDisplay::buildActions()
 
 	act_copyImage = new QAction(tr("Copy image"), this);
 	connect(act_copyImage, SIGNAL(triggered()), this, SLOT(copyImage()));
-	this->addAction(act_copyImage);
 	act_copyImage->setEnabled(false);
+	this->addAction(act_copyImage);
+
+	act_saveImage = new QAction(tr("Save image"), this);
+	connect(act_saveImage, SIGNAL(triggered()), this, SLOT(saveImage()));
+	act_saveImage->setEnabled(false);
+	this->addAction(act_saveImage);
 }
 
 void MathDisplay::initKLF()
@@ -164,7 +181,7 @@ void MathDisplay::texRendered(const QImage& image, const QString& errstr)
 	emit(resized());
 
 	if(!needsUnthemedRender)
-		act_copyImage->setEnabled(true);
+		renderAvailable(true);
 
 	renderer=NULL;
 }
@@ -179,8 +196,14 @@ void MathDisplay::unthemedTexRendered(const QImage& image, const QString& errstr
 	}
 
 	unthemedRender = image;
-	act_copyImage->setEnabled(true);
+	renderAvailable(true);
 
 	unthemedRenderer=NULL;
+}
+
+void MathDisplay::renderAvailable(const bool isAvailable)
+{
+	act_copyImage->setEnabled(isAvailable);
+	act_saveImage->setEnabled(isAvailable);
 }
 
