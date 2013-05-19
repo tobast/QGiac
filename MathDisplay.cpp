@@ -85,6 +85,12 @@ void MathDisplay::copyLatex()
 	cb->setText(toTex(rawText));
 }
 
+void MathDisplay::copyMathml()
+{
+	QClipboard *cb = QApplication::clipboard();
+	cb->setText(toMml(rawText));
+}
+
 void MathDisplay::copyImage()
 {
 	if(pixmap() == 0)
@@ -119,9 +125,13 @@ void MathDisplay::buildActions()
 	connect(act_copyText, SIGNAL(triggered()), this, SLOT(copyText()));
 	this->addAction(act_copyText);
 
-	act_copyText = new QAction(tr("Copy LaTeX code"), this);
-	connect(act_copyText, SIGNAL(triggered()), this, SLOT(copyLatex()));
-	this->addAction(act_copyText);
+	act_copyLatex = new QAction(tr("Copy LaTeX code"), this);
+	connect(act_copyLatex, SIGNAL(triggered()), this, SLOT(copyLatex()));
+	this->addAction(act_copyLatex);
+
+	act_copyMathml = new QAction(tr("Copy MathML code"), this);
+	connect(act_copyMathml, SIGNAL(triggered()), this, SLOT(copyMathml()));
+	this->addAction(act_copyMathml);
 
 	act_copyImage = new QAction(tr("Copy image"), this);
 	connect(act_copyImage, SIGNAL(triggered()), this, SLOT(copyImage()));
@@ -154,8 +164,13 @@ void MathDisplay::initKLF()
 QString MathDisplay::toTex(const QString& toConvert)
 {
 	giac::gen inputGen(toConvert.toStdString(), context);
-
 	return QString(gen2tex(inputGen, context).c_str());
+}
+
+QString MathDisplay::toMml(const QString& toConvert)
+{
+	giac::gen inputGen(toConvert.toStdString(), context);
+	return QString(gen2mathml(inputGen, context).c_str());
 }
 
 void MathDisplay::updateTex(const QString& texStr)

@@ -68,6 +68,7 @@ class MathDisplay : public QLabel
 		void setRawText(QString text, const bool processLatex=true);
 		void copyText();
 		void copyLatex();
+		void copyMathml();
 		void copyImage();
 		void saveImage();
 
@@ -77,7 +78,7 @@ class MathDisplay : public QLabel
 	private: //meth
 		void buildActions();
 		void initKLF();
-//		QString toMML(const QString& toConvert);
+		QString toMml(const QString& toConvert);
 		QString toTex(const QString& toConvert);
 		void updateTex(const QString& texStr);
 		void updateUnthemedTex(const QString& texStr);
@@ -96,6 +97,7 @@ class MathDisplay : public QLabel
 		QString rawText;
 		QAction* act_copyText;
 		QAction* act_copyLatex;
+		QAction* act_copyMathml;
 		QAction* act_copyImage;
 		QAction* act_saveImage;
 		giac::context* context;
