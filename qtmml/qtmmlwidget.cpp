@@ -3369,6 +3369,7 @@ void MmlDocument::insertOperator(MmlNode *node, const QString &text)
     Q_ASSERT( ok );
     ok = insertChild(mo_node, text_node, 0);
     Q_ASSERT( ok );
+	Q_UNUSED( ok );
 }
 
 MmlNode *MmlDocument::domToMml(const QDomNode &dom_node, bool *ok, QString *errorMsg)
