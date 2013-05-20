@@ -69,17 +69,17 @@ class MathMmlDisplay : public QtMmlWidget
 	private: //meth
 		void init();
 		QString toMml(const QString& str);
+		void setMmlContent(const QString& text, QtMmlWidget* wid=NULL);
 	
 	private:
-		static const char MATHML_PREFIX[]; /* = "<!DOCTYPE math PUBLIC \"-//W3C//DTD MathML 2.0//EN\" "
-			"\"http://www.w3.org/Math/DTD/mathml2/mathml2.dtd\">\n"
-			"<math mode=\"display\" xmlns=\"http://www.w3.org/1998/Math/MathML\">\n"; */
-		static const char MATHML_SUFFIX[]; // = "\n</math>";
+		static const char MATHML_PREFIX[];
+		static const char MATHML_SUFFIX[];
 		static const QRgb RENDER_COLOR_BG = ~0;
 		static const QRgb RENDER_COLOR_FG = 0xff<<24;
 
 		giac::context* context;
 		QString displayedText;
+		QString displayedMml;
 
 		bool needsUnthemedRender;
 };

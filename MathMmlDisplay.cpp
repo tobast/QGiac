@@ -61,42 +61,33 @@ QImage MathMmlDisplay::getUnthemedRender()
 {
 	if(needsUnthemedRender)
 	{
-		/*
-		QtMmlWidget renderWid = this;
+		QtMmlWidget renderWid;
+
 		QPalette palette = QApplication::palette();
-		palette.setColor(QPalette::Text, RENDER_COLOR_FG);
-		palette.setColor(QPalette::Window, RENDER_COLOR_BG);
+		palette.setColor(QPalette::WindowText, QColor(RENDER_COLOR_FG));
+		palette.setColor(QPalette::Window, QColor(RENDER_COLOR_BG));
 		renderWid.setPalette(palette);
 
-		QPixmap out(renderWid.size());
-		renderWid.render(&out);
-		return out.toImage();
-		*/
+		setMmlContent(displayedMml, &renderWid);
+		renderWid.setFixedSize(renderWid.sizeHint());
+
+		return QPixmap::grabWidget(&renderWid).toImage();
 	}
 
-	QPixmap out(size());
-	render(&out);
-	return out.toImage();
+	return QPixmap::grabWidget(this).toImage();
 }
 
 void MathMmlDisplay::setRawText(QString text, const bool processMml)
 {
+	displayedText = text;
+
 	if(!processMml)
 		text = QString("<mtext>%1</mtext>").arg(text);
 	else
 		text = toMml(text);
 
-	QString mathml = MATHML_PREFIX + text + MATHML_SUFFIX;
-	QString errstr;
-	int row,col;
-	if(!setContent(mathml, &errstr, &row, &col))
-	{
-		QString errline = mathml.section('\n', row-1, row-1);
-		QMessageBox::warning(this, tr("Error"), tr("Could not render math expression %1. MathMl renderer returned:\n"
-					"%2\n"
-					"at pos %3 in line:\n"
-					"%4.").arg(text).arg(errstr).arg(col).arg(errline));
-	}
+	displayedMml = text;
+	setMmlContent(text);
 	
 	setFixedSize(sizeHint());
 	emit(resized());
@@ -106,7 +97,7 @@ void MathMmlDisplay::setRawText(QString text, const bool processMml)
 void MathMmlDisplay::init()
 {
 	// needsUnthemedRender
-	needsUnthemedRender = ( (MathMmlDisplay::RENDER_COLOR_FG == QApplication::palette().text().color().rgb()) &&
+	needsUnthemedRender = ( (MathMmlDisplay::RENDER_COLOR_FG != QApplication::palette().text().color().rgb()) ||
 			(MathMmlDisplay::RENDER_COLOR_BG == QApplication::palette().window().color().rgb()) );
 
 	setFixedSize(0,0);
@@ -117,5 +108,23 @@ QString MathMmlDisplay::toMml(const QString& str)
 {
 	giac::gen inputGen(str.toStdString(), context);
 	return QString(gen2mathml(inputGen, context).c_str());
+}
+
+void MathMmlDisplay::setMmlContent(const QString& text, QtMmlWidget* wid)
+{
+	if(wid == NULL)
+		wid = this;
+
+	QString mathml = MATHML_PREFIX + text + MATHML_SUFFIX;
+	QString errstr;
+	int row,col;
+	if(!wid->setContent(mathml, &errstr, &row, &col))
+	{
+		QString errline = mathml.section('\n', row-1, row-1);
+		QMessageBox::warning(this, tr("Error"), tr("Could not render math expression %1. MathMl renderer returned:\n"
+					"%2\n"
+					"at pos %3 in line:\n"
+					"%4.").arg(text).arg(errstr).arg(col).arg(errline));
+	}
 }
 
