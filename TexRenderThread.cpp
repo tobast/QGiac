@@ -47,7 +47,7 @@ TexRenderThread::TexRenderThread(const QString& text, KLFBackend::klfSettings kl
 
 bool TexRenderThread::defaultMatchUsed()
 {
-	return (TexRenderThread::def_fgColor == QApplication::palette().text().color()) &&
+	return (TexRenderThread::def_fgColor == QApplication::palette().windowText().color()) &&
 		(TexRenderThread::def_bgColor == QApplication::palette().window().color());
 }
 

@@ -37,67 +37,49 @@
 
 #include "MathDisplay.h"
 
-// STATIC INIT
-bool MathDisplay::initDone = false;
-bool MathDisplay::klfDisabled = false;
-KLFBackend::klfSettings MathDisplay::klfsetts;
-
 MathDisplay::MathDisplay(giac::context* context, QWidget* parent) :
-	QLabel(parent), context(context), renderer(NULL), unthemedRenderer(NULL) 
+	QWidget(parent), context(context), dispText()
 {
-	initKLF();
-	buildActions();
+	buildWidget();
 }
+
 MathDisplay::MathDisplay(giac::context* context, const QString& text, QWidget* parent) :
-	QLabel(parent), context(context), renderer(NULL), unthemedRenderer(NULL)
+	QWidget(parent), context(context), dispText()
 {
-	initKLF();
-	buildActions();
-	setRawText(text);
-}
-
-void MathDisplay::setRawText(QString text, const bool processLatex)
-{
-	rawText = text;
-	renderAvailable(false);
+	buildWidget();
 	setText(text);
-	adjustSize();
-
-	if(processLatex)
-	{
-		QString tex = toTex(text);
-		updateTex(tex);
-
-		if(needsUnthemedRender)
-			updateUnthemedTex(tex);
-	}
 }
 
+void MathDisplay::setText(const QString& text, const bool processLanguage)
+{
+	dispText = text;
+	mathwidget->setRawText(text, processLanguage);
+}
+
+
+// ==== COPY ====
 void MathDisplay::copyText()
 {
 	QClipboard *cb = QApplication::clipboard();
-	cb->setText(rawText);
+	cb->setText(dispText);
 }
 
 void MathDisplay::copyLatex()
 {
 	QClipboard *cb = QApplication::clipboard();
-	cb->setText(toTex(rawText));
+	cb->setText(toTex(dispText));
 }
 
-void MathDisplay::copyMathml()
+void MathDisplay::copyMml()
 {
 	QClipboard *cb = QApplication::clipboard();
-	cb->setText(toMml(rawText));
+	cb->setText(toMml(dispText));
 }
 
 void MathDisplay::copyImage()
 {
-	if(pixmap() == 0)
-		return;
 	QClipboard *cb = QApplication::clipboard();
-
-	cb->setImage(unthemedRender);
+	cb->setImage(mathwidget->getUnthemedRender());
 }
 
 void MathDisplay::saveImage()
@@ -113,8 +95,24 @@ void MathDisplay::saveImage()
 	if(lastDot == -1 || (lastSlash >= lastDot))
 		filepath.append(".png");
 
-	if(!QPixmap::fromImage(unthemedRender).save(filepath))
-		QMessageBox::warning(this, tr("Error"), tr("Cannot save this image as %1. Please check your file name.").arg(filepath));
+	if(!QPixmap::fromImage(mathwidget->getUnthemedRender()).save(filepath))
+		QMessageBox::warning(this, tr("Error"), tr("Cannot save this image as %1. "
+					"Please check your file name.").arg(filepath));
+}
+// ==== END COPY ====
+
+void MathDisplay::buildWidget()
+{
+	l_main = new QVBoxLayout;
+	mathwidget = new MATHWIDGET(context);
+	connect(mathwidget, SIGNAL(resized()), this, SLOT(childResized()));
+	connect(mathwidget, SIGNAL(s_renderAvailable(const bool&)), this, SLOT(renderAvailable(const bool&)));
+
+	l_main->addWidget(mathwidget);
+	l_main->setAlignment(Qt::AlignCenter);
+	setLayout(l_main);
+
+	buildActions();
 }
 
 void MathDisplay::buildActions()
@@ -129,9 +127,9 @@ void MathDisplay::buildActions()
 	connect(act_copyLatex, SIGNAL(triggered()), this, SLOT(copyLatex()));
 	this->addAction(act_copyLatex);
 
-	act_copyMathml = new QAction(tr("Copy MathML code"), this);
-	connect(act_copyMathml, SIGNAL(triggered()), this, SLOT(copyMathml()));
-	this->addAction(act_copyMathml);
+	act_copyMml = new QAction(tr("Copy MathML code"), this);
+	connect(act_copyMml, SIGNAL(triggered()), this, SLOT(copyMml()));
+	this->addAction(act_copyMml);
 
 	act_copyImage = new QAction(tr("Copy image"), this);
 	connect(act_copyImage, SIGNAL(triggered()), this, SLOT(copyImage()));
@@ -144,94 +142,26 @@ void MathDisplay::buildActions()
 	this->addAction(act_saveImage);
 }
 
-void MathDisplay::initKLF()
+QString MathDisplay::toTex(const QString& str)
 {
-	if(!MathDisplay::initDone)
-	{
-		if(!KLFBackend::detectSettings(&MathDisplay::klfsetts))
-		{
-			QMessageBox::warning(this, tr("TeX error"), tr("Unable to find math formula rendering dependancies (latex and ghostscript executables). The formulas will be displayed in text mode."));
-			klfDisabled = true;
-		}
-
-		MathDisplay::initDone=true;
-	}
-
-	// If theme colors are not black on white, we have to gen another image
-	needsUnthemedRender = ! TexRenderThread::defaultMatchUsed();	
-}
-
-QString MathDisplay::toTex(const QString& toConvert)
-{
-	giac::gen inputGen(toConvert.toStdString(), context);
+	giac::gen inputGen(str.toStdString(), context);
 	return QString(gen2tex(inputGen, context).c_str());
 }
 
-QString MathDisplay::toMml(const QString& toConvert)
+QString MathDisplay::toMml(const QString& str)
 {
-	giac::gen inputGen(toConvert.toStdString(), context);
+	giac::gen inputGen(str.toStdString(), context);
 	return QString(gen2mathml(inputGen, context).c_str());
 }
 
-void MathDisplay::updateTex(const QString& texStr)
+void MathDisplay::childResized()
 {
-	updateTexOf(texStr, renderer, SLOT(texRendered(const QImage&, const QString&)), false);
-}
-void MathDisplay::updateUnthemedTex(const QString& texStr)
-{
-	updateTexOf(texStr, unthemedRenderer, SLOT(unthemedTexRendered(const QImage&, const QString&)), true);
-}
-
-void MathDisplay::updateTexOf(const QString& texStr, TexRenderThread* renThread, const char* renderedSlot, const bool isUnthemed)
-{
-	if(klfDisabled)
-		return;
-
-	if(renThread != NULL)
-	{
-		renThread->terminate();
-		renThread->wait();
-	}
-
-	renThread = new TexRenderThread(texStr, klfsetts, isUnthemed);
-	connect(renThread, SIGNAL(resultAvailable(const QImage&, const QString&)), this, renderedSlot);
-	renThread->start(QThread::LowPriority);
-}
-
-void MathDisplay::texRendered(const QImage& image, const QString& errstr)
-{
-	if(!errstr.isEmpty())
-		QMessageBox::warning(this, tr("Rendering error"), tr("The application failed to render a formula. The renderer returned:\n")+errstr);
-
-	unthemedRender = image;
-	setPixmap(QPixmap::fromImage(image));
-	adjustSize();
 	emit(resized());
-
-	if(!needsUnthemedRender)
-		renderAvailable(true);
-
-	renderer=NULL;
 }
 
-void MathDisplay::unthemedTexRendered(const QImage& image, const QString& errstr)
+void MathDisplay::renderAvailable(const bool& avail)
 {
-	if(!errstr.isEmpty())
-	{
-		QMessageBox::warning(this, tr("Rendering error for unthemed result"),
-				tr("The application failed to render a formula in its unthemed form"
-					"(ie., with default backgroud/foreground colors). The renderer returned: \n")+errstr);
-	}
-
-	unthemedRender = image;
-	renderAvailable(true);
-
-	unthemedRenderer=NULL;
-}
-
-void MathDisplay::renderAvailable(const bool isAvailable)
-{
-	act_copyImage->setEnabled(isAvailable);
-	act_saveImage->setEnabled(isAvailable);
+	act_copyImage->setEnabled(avail);
+	act_saveImage->setEnabled(avail);
 }
 

@@ -35,29 +35,34 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/gpl.txt>.
  */
 
-#ifndef DEF_MATHDISPLAY
-#define DEF_MATHDISPLAY
+/// Selects the math displayer, interfaces it, and implements right-click menu
 
+#ifndef MATH_DISPLAY
+#define MATH_DISPLAY
+
+/// Choose your displayer here
+// DO NOT SELECT MORE THAN ONE.
+// Selected in .pro by default
+//#define USE_MATHML
+//#define USE_LATEX
+
+#include <QWidget>
 #include <QString>
-#include <QLabel>
-#include <QPixmap>
-#include <QImage>
-#include <QMessageBox>
-#include <QApplication>
+#include <QVBoxLayout>
 #include <QAction>
 #include <QClipboard>
-#include <QFileDialog>
-#include <QDir>
 
-#include <klfbackend.h> // Display TeX
+#include <giac/gen.h>
 
-#include <string>
+#ifdef USE_MATHML
+	#include "MathMmlDisplay.h"
+	#define MATHWIDGET MathMmlDisplay
+#elif defined USE_LATEX
+	#include "MathLatexDisplay.h"
+	#define MATHWIDGET MathLatexDisplay
+#endif
 
-#include <giac/giac.h>
-
-#include "TexRenderThread.h"
-
-class MathDisplay : public QLabel
+class MathDisplay : public QWidget
 {
 	Q_OBJECT
 	public:
@@ -65,10 +70,10 @@ class MathDisplay : public QLabel
 		MathDisplay(giac::context* context, const QString& text, QWidget* parent=0);
 
 	public slots:
-		void setRawText(QString text, const bool processLatex=true);
+		void setText(const QString& text, const bool processLanguage=true);
 		void copyText();
 		void copyLatex();
-		void copyMathml();
+		void copyMml();
 		void copyImage();
 		void saveImage();
 
@@ -76,37 +81,29 @@ class MathDisplay : public QLabel
 		void resized();
 
 	private: //meth
+		void buildWidget();
 		void buildActions();
-		void initKLF();
-		QString toMml(const QString& toConvert);
-		QString toTex(const QString& toConvert);
-		void updateTex(const QString& texStr);
-		void updateUnthemedTex(const QString& texStr);
-		void updateTexOf(const QString& texStr, TexRenderThread* renThread, const char* renderedSlot, const bool isUnthemed);
-	
+		QString toTex(const QString& str);
+		QString toMml(const QString& str);
+
 	private slots:
-		void texRendered(const QImage& image, const QString& errstr);
-		void unthemedTexRendered(const QImage& image, const QString& errstr);
-		void renderAvailable(const bool isAvailable);
+		void childResized();
+		void renderAvailable(const bool& avail);
 
 	private:
-		static bool initDone; // = false
-		static bool klfDisabled; // =false
-		static KLFBackend::klfSettings klfsetts;
+		giac::context* context;
 
-		QString rawText;
+		QVBoxLayout* l_main;
+		MATHWIDGET* mathwidget;
+
+		QString dispText;
+
 		QAction* act_copyText;
 		QAction* act_copyLatex;
-		QAction* act_copyMathml;
+		QAction* act_copyMml;
 		QAction* act_copyImage;
 		QAction* act_saveImage;
-		giac::context* context;
-		TexRenderThread* renderer;
-
-		bool needsUnthemedRender;
-		TexRenderThread* unthemedRenderer;
-		QImage unthemedRender;
 };
 
-#endif//DEF_MATHDISPLAY
+#endif//MATH_DISPLAY
 
