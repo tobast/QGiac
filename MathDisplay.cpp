@@ -109,6 +109,7 @@ void MathDisplay::buildWidget()
 	connect(mathwidget, SIGNAL(s_renderAvailable(const bool&)), this, SLOT(renderAvailable(const bool&)));
 
 	l_main->addWidget(mathwidget);
+	l_main->setAlignment(Qt::AlignCenter);
 	setLayout(l_main);
 
 	buildActions();
@@ -155,7 +156,6 @@ QString MathDisplay::toMml(const QString& str)
 
 void MathDisplay::childResized()
 {
-	adjustSize();
 	emit(resized());
 }
 

@@ -64,7 +64,7 @@ class MathLatexDisplay : public QLabel
 		MathLatexDisplay(giac::context* context, QWidget* parent=0);
 		MathLatexDisplay(giac::context* context, const QString& text, QWidget* parent=0);
 
-		const QImage getUnthemedRender();
+		QImage getUnthemedRender();
 
 	public slots:
 		void setRawText(QString text, const bool processLatex=true);

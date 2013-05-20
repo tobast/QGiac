@@ -42,9 +42,9 @@
 
 /// Choose your displayer here
 // DO NOT SELECT MORE THAN ONE.
-
+// Selected in .pro by default
 //#define USE_MATHML
-#define USE_LATEX
+//#define USE_LATEX
 
 #include <QWidget>
 #include <QString>

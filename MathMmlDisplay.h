@@ -38,6 +38,51 @@
 #ifndef MATHMMLDISPLAY
 #define MATHMMLDISPLAY
 
+#include <QApplication>
+#include <QString>
+#include <QImage>
+#include <QMessageBox>
+#include <QPalette>
+#include <QPixmap>
+#include <QFileDialog>
+#include "qtmml/qtmmlwidget.h"
+
+#include <giac/giac.h>
+
+class MathMmlDisplay : public QtMmlWidget
+{
+	Q_OBJECT
+
+	public:
+		MathMmlDisplay(giac::context* context, QWidget* parent=0);
+		MathMmlDisplay(giac::context* context, const QString& text, QWidget* parent=0);
+
+		QImage getUnthemedRender();
+
+	public slots:
+		void setRawText(QString text, const bool processMml = true);
+
+	signals:
+		void resized();
+		void s_renderAvailable(const bool&);
+
+	private: //meth
+		void init();
+		QString toMml(const QString& str);
+	
+	private:
+		static const char MATHML_PREFIX[]; /* = "<!DOCTYPE math PUBLIC \"-//W3C//DTD MathML 2.0//EN\" "
+			"\"http://www.w3.org/Math/DTD/mathml2/mathml2.dtd\">\n"
+			"<math mode=\"display\" xmlns=\"http://www.w3.org/1998/Math/MathML\">\n"; */
+		static const char MATHML_SUFFIX[]; // = "\n</math>";
+		static const QRgb RENDER_COLOR_BG = ~0;
+		static const QRgb RENDER_COLOR_FG = 0xff<<24;
+
+		giac::context* context;
+		QString displayedText;
+
+		bool needsUnthemedRender;
+};
 
 #endif//MATHMMLDISPLAY
 

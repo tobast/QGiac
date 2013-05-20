@@ -36,3 +36,86 @@
  */
 
 #include "MathMmlDisplay.h"
+
+// === static const init ========
+const char MathMmlDisplay::MATHML_PREFIX[] =
+	"<!DOCTYPE math PUBLIC \"-//W3C//DTD MathML 2.0//EN\" "
+	"\"http://www.w3.org/Math/DTD/mathml2/mathml2.dtd\">\n"
+	"<math mode=\"display\" xmlns=\"http://www.w3.org/1998/Math/MathML\">\n";
+const char MathMmlDisplay::MATHML_SUFFIX[] = "\n</math>";
+// === END static const init ====
+
+MathMmlDisplay::MathMmlDisplay(giac::context* context, QWidget* parent) :
+	QtMmlWidget(parent), context(context), displayedText()
+{
+	init();
+}
+MathMmlDisplay::MathMmlDisplay(giac::context* context, const QString& text, QWidget* parent) :
+	QtMmlWidget(parent), context(context), displayedText(text)
+{
+	init();
+	setRawText(text);
+}
+
+QImage MathMmlDisplay::getUnthemedRender()
+{
+	if(needsUnthemedRender)
+	{
+		/*
+		QtMmlWidget renderWid = this;
+		QPalette palette = QApplication::palette();
+		palette.setColor(QPalette::Text, RENDER_COLOR_FG);
+		palette.setColor(QPalette::Window, RENDER_COLOR_BG);
+		renderWid.setPalette(palette);
+
+		QPixmap out(renderWid.size());
+		renderWid.render(&out);
+		return out.toImage();
+		*/
+	}
+
+	QPixmap out(size());
+	render(&out);
+	return out.toImage();
+}
+
+void MathMmlDisplay::setRawText(QString text, const bool processMml)
+{
+	if(!processMml)
+		text = QString("<mtext>%1</mtext>").arg(text);
+	else
+		text = toMml(text);
+
+	QString mathml = MATHML_PREFIX + text + MATHML_SUFFIX;
+	QString errstr;
+	int row,col;
+	if(!setContent(mathml, &errstr, &row, &col))
+	{
+		QString errline = mathml.section('\n', row-1, row-1);
+		QMessageBox::warning(this, tr("Error"), tr("Could not render math expression %1. MathMl renderer returned:\n"
+					"%2\n"
+					"at pos %3 in line:\n"
+					"%4.").arg(text).arg(errstr).arg(col).arg(errline));
+	}
+	
+	setFixedSize(sizeHint());
+	emit(resized());
+	emit(s_renderAvailable(true));
+}
+
+void MathMmlDisplay::init()
+{
+	// needsUnthemedRender
+	needsUnthemedRender = ( (MathMmlDisplay::RENDER_COLOR_FG == QApplication::palette().text().color().rgb()) &&
+			(MathMmlDisplay::RENDER_COLOR_BG == QApplication::palette().window().color().rgb()) );
+
+	setFixedSize(0,0);
+	emit(resized());
+}
+
+QString MathMmlDisplay::toMml(const QString& str)
+{
+	giac::gen inputGen(str.toStdString(), context);
+	return QString(gen2mathml(inputGen, context).c_str());
+}
+

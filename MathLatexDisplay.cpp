@@ -54,7 +54,7 @@ MathLatexDisplay::MathLatexDisplay(giac::context* context, const QString& text, 
 	setRawText(text);
 }
 
-const QImage MathLatexDisplay::getUnthemedRender()
+QImage MathLatexDisplay::getUnthemedRender()
 {
 	if(needsUnthemedRender)
 		return unthemedRender;
