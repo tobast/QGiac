@@ -71,11 +71,18 @@ void ContextTab::addCalcWidget(bool setFocus)
 	CalculationWidget* calcWid = new CalculationWidget(&context, calcWidgets.size()+1);
 
 	l_main->addWidget(calcWid);
+
+	if(!calcWidgets.isEmpty())
+	{
+		setTabOrder(calcWidgets.back()->getInputLine(), calcWid->getInputLine());
+		setTabOrder(calcWid->getInputLine(), calcWidgets.front()->getInputLine());
+	}
 	calcWidgets.append(calcWid);
 
 	connect(calcWid, SIGNAL(computedExpr(const int&)), this, SLOT(computedExpr(const int&)));
 
 	widget()->resize(widget()->sizeHint());
+
 
 	connect(calcWid, SIGNAL(resized()), this, SLOT(subWidgetResized()));
 

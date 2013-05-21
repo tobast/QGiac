@@ -56,6 +56,7 @@ class CalculationWidget : public QFrame
 	Q_OBJECT
 	public:
 		CalculationWidget(giac::context* context, const int& id=-1);
+		QLineEdit* getInputLine() const { return inputLine; }
 
 	protected: //meth
 		void focusInEvent(QFocusEvent* event);
