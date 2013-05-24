@@ -73,6 +73,7 @@ void GraphicalCore::buildMenuBar()
 	// ==== WIZARDS MENU ====
 	menu_wizards = menubar->addMenu(tr("Wizards"));
 	act_wizMatrix = menu_wizards->addAction(tr("Matrix wizard"), this, SLOT(openWizard_matrix()));
+	menu_wizards->addAction(tr("Work in progress..."))->setEnabled(false);
 }
 
 void GraphicalCore::buildCentralWidget()
